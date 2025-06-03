@@ -5,9 +5,16 @@ import { catchErrors } from "../handlers/errorHandlers.js";
 import runRouter from "./runRoutes.js";
 import userRouter from "./userRoutes.js";
 import noteRouter from "./noteRoutes.js";
+import renderRouter from "./renderRoutes.js";
+
+const log = (req, res, next) => {
+  console.log("here");
+  next();
+};
 
 export const router = Router();
 
-router.use("/run", runRouter);
-router.use("/user", userRouter);
-router.use("/note", noteRouter);
+router.use("/runs", runRouter);
+router.use("/users", log, userRouter);
+router.use("/notes", noteRouter);
+router.use("/", renderRouter);

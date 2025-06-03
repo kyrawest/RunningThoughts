@@ -1,0 +1,35 @@
+<div class="card bg-secondary mb-3 shadow-sm <%= run.tot_open_notes == 0 ? 'closed-note' : '' %>" id="run-<%= run._id %>-card" data-opennotes="<%= run.tot_open_notes %>">
+        <div class="card-header bg-primary d-flex flex-row justify-content-between align-items-center">
+          <button class="btn-close delete-run-button" 
+          data-bs-toggle="modal" 
+          data-bs-target="#deleteRunModal" 
+          data-runid="<%= run._id %>"
+          >
+            <!-- <i class="fas fa-x"></i> -->
+          </button>
+          <div class="d-flex flex-column">
+            <h2 class="card-title edu-sa-beginner-500 "><%= run.title? run.title : new Date(run.createdAt).toLocaleDateString(undefined, {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }) %></h2>
+            <subtitle class="text-muted">
+              <%= run.title ? new Date(run.createdAt).toLocaleDateString(undefined, {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }) : "" %>
+            </subtitle>
+          </div>
+          <a href="/run/<%= run._id %>" class="btn btn-secondary">Details</a>
+        </div>
+    <div class="card-body bg-light"> 
+      <div class="run-notes">
+        <% run.notes.forEach(note => { %> <%- include('./note-card', { note }) %>
+        <% }) %>
+      </div>
+    </div>
+</div>
+<!-- href="/run/<%= run._id %>" -->

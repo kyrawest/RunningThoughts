@@ -9,7 +9,11 @@ const noteRouter = Router();
 
 //CREATE
 
-noteRouter.post("/", isLoggedIn, catchErrors(noteController.createNewNote));
+noteRouter.post(
+  "/new-note/:runId",
+  isLoggedIn,
+  catchErrors(noteController.createNewNote)
+);
 
 //READ
 
@@ -21,6 +25,13 @@ noteRouter.get(
 );
 
 //UPDATE
+
+noteRouter.put(
+  "/toggle-open/:noteId",
+  isLoggedIn,
+  validateNoteId,
+  catchErrors(noteController.toggleOpen)
+);
 
 noteRouter.put(
   "/:noteId",

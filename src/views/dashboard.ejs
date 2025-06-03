@@ -1,0 +1,49 @@
+<%- include('partials/header', {title, user, runid: 0}) %>
+    
+    <h1 class="display-1 mb-2 container text-light text-uppercase fw-bold">DASHBOARD</h1>
+        
+
+<div class="container mb-3">
+    <div class="row align-items-end">
+        <form class="col-sm-9 col-12" action="/runs/newRun" method="POST">
+            <button class="btn btn-primary container" id="new-run-button" data-bs-toggle="modal" data-bs-target="#newRunModal">
+                <h4><i class="fas fa-plus"></i>&nbsp&nbspNew Run </h4></button>
+        </form>
+    
+                
+                <div class="btn-group col-sm-3 col-12" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" class="btn-check btn-light" name="btnradio" autocomplete="off" checked id="toggleAllView">
+                    <label class="btn btn-light" for="toggleAllView">All notes</label>
+                    <input type="radio" class="btn-check btn-light" name="btnradio" autocomplete="off" id="toggleOpenView">
+                    <label class="btn btn-light" for="toggleOpenView">Open only</label>
+                </div>
+    </div>
+</div>
+
+<div class="container" id="runs">
+    <% if (runs.length === 0) { %>
+        <div class="container d-flex flex-column align-items-center">
+        <h2 class="display-4">Looks like you don't have any runs yet.</h2>
+        <p class="display-6 text-mutedish">Tap the microphone or the New Run button to get started.</p>
+        <image src="/images/shrug-cere.png" id="shrug-cere" class="img-fluid"></image>
+    </div>
+      <% } else { %>
+    <% runs.forEach(run => { %> <%- include('components/run-card', { run }) %> <%
+      }) %> 
+      <% } %>
+</div class="container">
+
+<div class="d-flex justify-content-center">
+  
+      <%- include('partials/pagination', { pageNumber }) %>
+</div>
+    <%- include('partials/mic-button', { runId: user.current_run }) %>
+
+    <%- include('components/delete-run-modal') %>
+    <%- include('components/delete-note-modal') %>
+    <%- include('components/edit-note-modal') %>
+    <%-
+    include('components/new-note-modal') %> 
+    <%- include('partials/footer', { user, runid: 0 }) %>
+    
+

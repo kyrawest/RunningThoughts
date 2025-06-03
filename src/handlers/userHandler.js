@@ -2,6 +2,11 @@ import User from "../models/userSchema.js";
 import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
 
+import mongoose from "mongoose";
+import plm from "passport-local-mongoose";
+import ArraySort from "array-sort";
+import createHttpError from "http-errors";
+
 //CREATE
 
 const register = async (email, password, username) => {
@@ -17,10 +22,10 @@ const register = async (email, password, username) => {
   } catch (err) {
     // Check for specific error and provide custom messages
     if (err.name === "MissingPasswordError") {
-      throw new Error("Password is required.");
+      throw createHttpError(400, "Password must exist");
     }
     if (err.name === "UserExistsError") {
-      throw new Error("Email already exists.");
+      throw createHttpError(409, "User with this email already exists");
     }
     if (err.name === "IncorrectPasswordError") {
       throw new Error("Incorrect password.");
@@ -36,18 +41,31 @@ const register = async (email, password, username) => {
 
 const login = async (email, password) => {
   // Login a user
-  const authentication = await User.authenticate()(email, password);
+  const authentication = await User.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  })(email, password);
   if (!authentication.user || authentication.error) {
-    throw new Error("User login failed");
+    throw createHttpError(
+      401,
+      `Login failed: ${authentication.error?.message}` || "Login failed"
+    );
   }
   return authentication;
 };
 
 //READ
 
-const getThisUserRuns = async (userId) => {
-  //FUNCTION: returns all the runs associated with a given user
-  return await Run.find({ userId }).lean();
+const getThisUserRuns = async (userId, pageNumber) => {
+  const limit = pageNumber * 10;
+  const skip = limit - 10;
+  //FUNCTION: Finds the runs for a given userId based on page number and returns them as an array
+  return await Run.find({ userId })
+    .sort({ updatedAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+  // return ArraySort(runs, "updatedAt", { reverse: true });
 };
 
 const getThisUserRunIds = async (userId) => {
@@ -66,8 +84,58 @@ const getUser = async (userId) => {
 const updateUser = async (userId, keyValue) => {
   //FUNCTION: takes a {key:value} pair like {tot_notes: "0"} and updates the corresponding document parameter
 
-  const updatedUser = await User.updateOne({ _id: userId }, { $set: keyValue });
+  //Use try/catch here to gracefully handle duplicate email errors.
+  try {
+    const updatedUser = await User.updateOne(
+      { _id: userId },
+      { $set: keyValue }
+    );
+    return updatedUser;
+  } catch (err) {
+    if (err.code == 11000) {
+      throw new createHttpError(
+        409,
+        "An account with this email already exists."
+      );
+    }
+    throw err;
+  }
+};
+
+const setUserPassword = async (userId, newPassword) => {
+  //FUNCTION: sets a new password for a user
+
+  const user = await User.findOne({ _id: userId });
+
+  const updatedUser = await user.setPassword(newPassword);
+
   return updatedUser;
+};
+
+const updatePassword = async (
+  userId,
+  currentPassword,
+  newPassword,
+  confirmPassword
+) => {
+  //change user password
+
+  if (newPassword !== confirmPassword) {
+    throw createHttpError(
+      400,
+      "New password does not match confirmed password."
+    );
+  }
+  if (newPassword == currentPassword) {
+    throw createHttpError(
+      400,
+      "New password cannot be the same as your current password"
+    );
+  }
+
+  const user = await User.findOne({ _id: userId });
+
+  await user.changePassword(currentPassword, newPassword);
 };
 
 //DELETE
@@ -80,7 +148,15 @@ const deleteUserContent = async (userId) => {
 
   await User.updateOne(
     { _id: userId },
-    { $set: { tot_notes: 0, tot_runs: 0 } }
+    {
+      $set: {
+        tot_notes: 0,
+        tot_runs: 0,
+        tot_open_notes: 0,
+        current_run: null,
+        currentRunUpdatedAt: null,
+      },
+    }
   );
   return;
 };
@@ -99,6 +175,8 @@ export default {
   getThisUserRunIds,
   getUser,
   updateUser,
+  updatePassword,
+  setUserPassword,
   deleteUserContent,
   deleteUser,
 };

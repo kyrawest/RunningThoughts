@@ -1,0 +1,117 @@
+<%- include('partials/header', {title, user, runid: run._id}) %>
+
+<div class="d-flex flex-row justify-content-between mb-4 container">
+  <div class="left d-flex flex-column">
+    <h1 class="display-1 text-primary edu-sa-beginner-700">
+      <%= run.title? run.title : "Run on " + new
+      Date(run.createdAt).toLocaleDateString(undefined, { weekday: "long", year:
+      "numeric", month: "long", day: "numeric", }) %>
+    </h1>
+    <subtitle class="text-light">
+      <%= run.title ? new Date(run.createdAt).toLocaleDateString(undefined, {
+      weekday: "long", year: "numeric", month: "long", day: "numeric", }) : ""
+      %>
+    </subtitle>
+  </div>
+  <div class="right">
+    <button
+      id="btnGroupDrop1"
+      type="button"
+      class="btn btn-primary dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="true"
+      aria-expanded="false"
+    ></button>
+    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+      <a
+        class="dropdown-item"
+        data-bs-toggle="modal"
+        data-bs-target="#editRunModal"
+        data-runid="<%= run._id %>"
+      >
+        Add / edit title</a
+      >
+      <a
+        class="delete-run-button dropdown-item"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteRunModal"
+        data-runid="<%= run._id %>"
+      >
+        Delete run
+      </a>
+      <a
+        class="delete-run-notes-button dropdown-item"
+        data-bs-toggle="modal"
+        data-bs-target="#deleteRunNotesModal"
+        data-runid="<%= run._id %>"
+        >Delete all notes</a
+      >
+    </div>
+  </div>
+</div>
+<div class="container mb-3">
+  <div class="row">
+    <form
+      class="col-sm-9 col-12 d-flex justify-content-center align-items-center container"
+      action="/run/<%= run._id %>/new-note"
+      method="GET"
+    >
+      <button
+        type="button"
+        class="new-note-button btn btn-secondary mb-3 container"
+        data-bs-toggle="modal"
+        data-bs-target="#newNoteModal"
+      >
+        + Add New Note
+      </button>
+    </form>
+
+    <div
+      class="btn-group col-sm-3 col-12"
+      role="group"
+      aria-label="Basic radio toggle button group"
+    >
+      <input
+        type="radio"
+        class="btn-check btn-light"
+        name="btnradio"
+        autocomplete="off"
+        checked
+        id="toggleAllView"
+      />
+      <label class="btn btn-light" for="toggleAllView">All notes</label>
+      <input
+        type="radio"
+        class="btn-check btn-light"
+        name="btnradio"
+        autocomplete="off"
+        id="toggleOpenView"
+      />
+      <label class="btn btn-light" for="toggleOpenView">Open only</label>
+    </div>
+  </div>
+</div>
+
+<% if (notes.length === 0) { %>
+<div class="container d-flex flex-column align-items-center">
+  <h2 class="display-4">
+    Looks like you don't have any notes in this run yet.
+  </h2>
+  <p class="display-6 text-mutedish">
+    Tap the microphone or the Add Note button to get started.
+  </p>
+  <image src="/images/shrug-cere.png" id="shrug-cere" class="img-fluid"></image>
+</div>
+<% } else { %>
+<div class="notes container">
+  <% notes.forEach(note => { %> <%- include('components/note-card', { note }) %>
+  <% }) %>
+</div>
+<% } %> <%- include('partials/mic-button', { runId: run._id }) %> <%-
+include('components/delete-run-modal') %> <%-
+include('components/delete-run-notes-modal') %> <%-
+include('components/edit-run-modal', { title: run.title }) %> <%-
+include('components/edit-note-modal') %> <%-
+include('components/delete-note-modal') %> <%-
+include('components/new-note-modal') %> <%- include('partials/footer', {runid:
+run._id}) %>

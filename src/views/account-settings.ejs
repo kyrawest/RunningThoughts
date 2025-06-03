@@ -1,0 +1,202 @@
+<%- include('partials/header', { title: 'Account Settings', runid: 0 }) %>
+
+<div class="container">
+  <h1 class="mb-4">Account Settings</h1>
+
+  <!-- Update Username -->
+  <form action="/users/<%- user._id %>" method="POST" class="mb-4">
+    <input type="hidden" name="_method" value="PUT" />
+    <div class="mb-3">
+      <label for="username" class="form-label">Display Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="username"
+        name="username"
+        value="<%= user.username %>"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Update Name</button>
+  </form>
+
+  <!-- Update Email -->
+  <form action="/users/<%- user._id %>" method="POST" class="mb-4">
+    <input type="hidden" name="_method" value="PUT" />
+    <div class="mb-3">
+      <label for="email" class="form-label">Email Address</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        value="<%= user.email %>"
+        required
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Update Email</button>
+  </form>
+
+  <!-- Update Password -->
+  <div class="border rounded p-4 mb-5">
+    <h4 class="mb-3">Change Password</h4>
+    <form action="/users/update-password/<%- user._id %>" method="POST">
+      <input type="hidden" name="_method" value="PUT" />
+
+      <div class="mb-3">
+        <label for="currentPassword" class="form-label">Current Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="currentPassword"
+          name="currentPassword"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="newPassword" class="form-label">New Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="newPassword"
+          name="newPassword"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="confirmPassword" class="form-label"
+          >Confirm New Password</label
+        >
+        <input
+          type="password"
+          class="form-control"
+          id="confirmPassword"
+          name="confirmPassword"
+          required
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary">Update Password</button>
+    </form>
+  </div>
+
+  <hr class="mb-4" />
+
+  <!-- Delete All Runs and Notes -->
+  <div class="buttons mb-3">
+    <button
+      type="submit"
+      class="btn btn-warning"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteUserDataModal"
+    >
+      Delete All Runs & Notes
+    </button>
+    <button
+      type="submit"
+      class="btn btn-danger"
+      data-bs-toggle="modal"
+      data-bs-target="#deleteUserModal"
+    >
+      Delete Account
+    </button>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  tabindex="-1"
+  id="deleteUserDataModal"
+  role="dialog"
+  aria-labelledby="deleteUserDataModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h4 class="modal-title" id="deleteUserDataModalLabel">
+          DELETE ALL USER DATA
+        </h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to delete all your runs and notes? This cannot
+          be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <form
+          id="deleteUserDataForm"
+          method="POST"
+          action="/users/delete-content/<%- user._id %>"
+        >
+          <input type="hidden" name="_method" value="DELETE" />
+          <button type="submit" class="btn btn-warning">
+            Yes, delete all my data
+          </button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  tabindex="-1"
+  id="deleteUserModal"
+  role="dialog"
+  aria-labelledby="deleteUserModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h4 class="modal-title" id="deleteUserModalLabel">DELETE ACCOUNT</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to delete your account? Your runs, notes, and
+          all associated data will be lost. This cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <form
+          id="deleteUserDataForm"
+          method="POST"
+          action="/users/<%- user._id %>"
+        >
+          <input type="hidden" name="_method" value="DELETE" />
+          <button type="submit" class="btn btn-warning">
+            Yes, delete my account.
+          </button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer', { runid: 0 }) %>

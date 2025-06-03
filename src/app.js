@@ -8,9 +8,12 @@ import cookieParser from "cookie-parser";
 import passport from "passport";
 import utils from "./utils/utils.js";
 import { router } from "./routes/router.js";
-import { notFound } from "./handlers/errorHandlers.js";
+import { notFound, errorHandler } from "./handlers/errorHandlers.js";
 import "./handlers/passport.js";
 import cors from "cors";
+import methodOverride from "method-override";
+import flash from "connect-flash";
+import favicon from "serve-favicon";
 
 // Create expresss app
 export const app = express();
@@ -20,11 +23,30 @@ app.set("view engine", "ejs");
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.set("views", path.join(__dirname, "views"));
+
 app.use(express.static(path.join(__dirname, "public")));
+
+// Bootstrap
+app.use(
+  "/css",
+  express.static(path.join(__dirname, "../node_modules/bootswatch/dist/brite"))
+);
+app.use(
+  "/js",
+  express.static(path.join(__dirname, "../node_modules/bootstrap/dist/js"))
+);
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(
+  methodOverride(function (req, res) {
+    if (req.body && typeof req.body === "object" && "_method" in req.body) {
+      // look in the POST body and override method
+      return req.body._method;
+    }
+  })
+);
 app.use(cookieParser());
 app.use(morgan("dev"));
 
@@ -53,6 +75,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.flashMessages = req.flash();
+  next();
+});
+
 // Set locals
 app.use((req, res, next) => {
   res.locals.user = req.user;
@@ -62,11 +90,21 @@ app.use((req, res, next) => {
 });
 
 app.use("/", router);
-app.use("/", (err, req, res, next) => {
-  console.error("Error:", err);
-  res
-    .status(err.status || 500)
-    .json({ message: err.message || "Internal Server Error" });
-});
+// app.use("/", (err, req, res, next) => {
+//   console.error("Error:", err);
+//   if (err.status === 404) {
+//     return res.status(404).json({ message: "404 Not Found" });
+//   } else if (err.name === "CastError") {
+//     return res.status(400).json({ message: "Invalid ID format" });
+//   } else if (err.message === "User login failed") {
+//     return res.status(401).json({ message: "User login failed" });
+//   } else {
+//     res
+//       .status(err.status || 500)
+//       .json({ message: err.message || "Internal Server Error" });
+//   }
+// });
 
-// app.use(notFound);
+app.use(notFound);
+
+app.use(errorHandler);

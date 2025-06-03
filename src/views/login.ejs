@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+
+  <body class="bg-darkish text-light">
+    <nav class="navbar navbar-expand-lg fixed-top bg-primary">
+      <div class="container-fluid"></div>
+    </nav>
+    <main class="mt-5">
+      <% if (flashMessages.error && flashMessages.error.length > 0) { %> <%
+      flashMessages.error.forEach(function(msg) { %>
+      <div class="alert alert-dismissible alert-warning container">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        <h4 class="alert-heading">Error</h4>
+        <p class="mb-0"><%= msg %></p>
+      </div>
+      <% }) %> <% } %> <% if (flashMessages.success &&
+      flashMessages.success.length > 0) { %> <%
+      flashMessages.success.forEach(function(msg) { %>
+      <div class="alert alert-dismissible alert-success container">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        <h4 class="alert-heading">Success!</h4>
+        <p class="mb-0"><%= msg %></p>
+      </div>
+      <% }) %> <% } %>
+
+      <div class="container-fluid">
+        <div class="row">
+          <div
+            class="col-lg-7 col-12 mb-lg-3 mb-0 d-flex justify-content-center align-items-lg-center align-items-end"
+            id="large-logo"
+          >
+            <img
+              src="/images/jym-large-logo.png"
+              alt="JYM Logo, RUNNINGTHOUGHTS, JOG YOUR MEMORY"
+              class="img-fluid h-75"
+            />
+          </div>
+
+          <div
+            class="col-lg-4 col- 12 d-flex flex-column justify-content-lg-center justify-content-start position-relative bottom-5"
+          >
+            <h1 class="container mb-3 mt-lg-5 pt-lg-5">Login</h1>
+            <form action="api/user/login" method="POST" class="mb-3 container">
+              <div class="mb-3 form-floating">
+                <input
+                  type="email"
+                  id="emailInput"
+                  name="email"
+                  class="form-control"
+                  placeholder="name@example.com"
+                  required
+                />
+                <label for="emailInput" class="form-label">Email</label>
+              </div>
+
+              <div class="mb-3 form-floating">
+                <input
+                  type="password"
+                  id="passwordInput"
+                  name="password"
+                  class="form-control"
+                  placeholder="Password"
+                  required
+                />
+                <label for="password" class="form-label">Password</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Log In</button>
+              <a href="/register">
+                <button type="button" class="btn btn-secondary">
+                  Don't have an account yet?
+                </button>
+              </a>
+            </form>
+          </div>
+          <div class="col-1"></div>
+        </div>
+      </div>
+    </main>
+
+    <script src="/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

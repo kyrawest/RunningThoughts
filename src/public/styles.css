@@ -1,0 +1,61 @@
+/* partials */
+
+.bg-darkish {
+  background-color: #1e201e;
+}
+
+.text-mutedish {
+  color: rgb(168, 168, 168);
+  font-style: italic;
+}
+
+/* sizing constaints for brand logo in top left of top nav bar */
+.nav-image {
+  width: 50px;
+  height: 50px;
+  margin: 0px;
+  padding: 0px;
+}
+
+/* Mic button that overlays most views */
+.mic-button {
+  width: 35vw;
+  max-width: 200px;
+  height: 35vw;
+  max-height: 200px;
+  position: fixed;
+  /* stick to the bottom right of the page */
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 1000;
+  font-size: clamp(5rem, 20vw, 8rem);
+}
+
+/* fonts */
+.patrick-hand-regular {
+  font-family: "Patrick Hand", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* // <weight>: Use a value from 400 to 700 */
+/* // <uniquifier>: Use a unique and descriptive class name */
+
+.edu-sa-beginner-500 {
+  font-family: "Edu SA Beginner", cursive;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.edu-sa-beginner-700 {
+  font-family: "Edu SA Beginner", cursive;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+#shrug-cere {
+  max-height: 300px;
+}

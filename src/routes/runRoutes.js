@@ -10,18 +10,21 @@ const runRouter = Router();
 //CREATE
 runRouter.post("/newRun", isLoggedIn, catchErrors(runController.createNewRun)); //Create a new run
 
+runRouter.post("/newRunWithNote", isLoggedIn, catchErrors(runController.createNewRunWithNote)); //Create a new run with a note
+
 //READ
 
 runRouter.get(
   "/for-run/:runId",
   isLoggedIn,
+  catchErrors(validateRunId),
   catchErrors(runController.getRunNotes)
 ); //get all notes for a given run
 
 runRouter.get(
   "/:runId",
   isLoggedIn,
-  validateRunId,
+  catchErrors(validateRunId),
   catchErrors(runController.getRun)
 ); //get a given run
 

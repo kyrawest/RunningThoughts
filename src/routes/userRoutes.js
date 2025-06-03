@@ -14,8 +14,6 @@ const userRouter = Router();
 
 //CREATE
 
-//TODO: create logout route
-
 userRouter.post(
   "/register",
   validateEmail,
@@ -24,7 +22,8 @@ userRouter.post(
   catchErrors(userController.register)
 );
 
-userRouter.post("/login", validateEmail, catchErrors(userController.login));
+userRouter.post("/login", validateEmail, userController.login);
+userRouter.get("/logout", catchErrors(userController.logout));
 
 //READ
 
@@ -55,6 +54,21 @@ userRouter.get(
 //UPDATE
 
 userRouter.put(
+  "/update-password/:userId",
+  isLoggedIn,
+  isAuthorized,
+  catchErrors(userController.updatePassword)
+);
+
+userRouter.put(
+  "/set-password/:userId",
+  isLoggedIn,
+  isAuthorized,
+  catchErrors(userController.setPassword)
+);
+// Uses passport-local-mongoose to set a new user password passed to is in req.body as {"newPassword": "<password here>"}
+
+userRouter.put(
   "/:userId",
   isLoggedIn,
   validateUserId,
@@ -64,9 +78,16 @@ userRouter.put(
 
 //DELETE
 
+const log = (req, res, next) => {
+  console.log("here");
+  next();
+};
+
 userRouter.delete(
-  "/delete-content/",
+  "/delete-content/:userId",
+  log,
   isLoggedIn,
+  log,
   catchErrors(userController.deleteUserContent)
 ); //delete runs+notes for a user
 

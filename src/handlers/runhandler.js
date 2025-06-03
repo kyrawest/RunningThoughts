@@ -6,7 +6,7 @@ import Note from "../models/noteSchema.js";
 
 const createNewRun = async ({ userId, title = "" }) => {
   const newRun = await Run.create({ userId, title });
-  await User.updateOne({ _id: userId }, { $inc: { tot_runs: 1 } });
+  await User.updateOne({ _id: userId }, { $inc: { tot_runs: 1 }, $set: {current_run: newRun._id} });
   return newRun;
 };
 
@@ -24,7 +24,7 @@ const getRun = async (runId) => {
 
 //UPDATE
 
-const updateRun = async (runId, keyValue, loggedUserId) => {
+const updateRun = async (runId, title, loggedUserId) => {
   //FUNCTION: takes a {key:value} pair like {title: "Hello"} and updates the corresponding document parameter
 
   const run = await getRun(runId);
@@ -34,7 +34,7 @@ const updateRun = async (runId, keyValue, loggedUserId) => {
     throw new Error("You do not have permission to access this");
   }
 
-  const updatedRun = await Run.updateOne({ _id: runId }, { $set: keyValue });
+  const updatedRun = await Run.updateOne({ _id: runId }, { $set: {title} }).lean();
   return updatedRun;
 };
 
@@ -54,8 +54,10 @@ const deleteRunNotes = async (runId, loggedUserId) => {
 
   await Note.deleteMany({ runId });
 
+  const open = run.tot_open_notes;
+
   await Run.updateOne({ _id: runId }, { $set: { tot_notes: 0 } });
-  await User.updateOne({ _id: userId }, { $inc: { tot_notes: runNotesInt } });
+  await User.updateOne({ _id: userId }, { $inc: { tot_notes: -runNotesInt, tot_open_notes: -open } });
 };
 
 const deleteRun = async (runId, loggedUserId) => {
