@@ -6,7 +6,10 @@ import Note from "../models/noteSchema.js";
 
 const createNewRun = async ({ userId, title = "" }) => {
   const newRun = await Run.create({ userId, title });
-  await User.updateOne({ _id: userId }, { $inc: { tot_runs: 1 }, $set: {current_run: newRun._id} });
+  await User.updateOne(
+    { _id: userId },
+    { $inc: { tot_runs: 1 }, $set: { current_run: newRun._id } }
+  );
   return newRun;
 };
 
@@ -34,7 +37,10 @@ const updateRun = async (runId, title, loggedUserId) => {
     throw new Error("You do not have permission to access this");
   }
 
-  const updatedRun = await Run.updateOne({ _id: runId }, { $set: {title} }).lean();
+  const updatedRun = await Run.updateOne(
+    { _id: runId },
+    { $set: { title } }
+  ).lean();
   return updatedRun;
 };
 
@@ -57,7 +63,10 @@ const deleteRunNotes = async (runId, loggedUserId) => {
   const open = run.tot_open_notes;
 
   await Run.updateOne({ _id: runId }, { $set: { tot_notes: 0 } });
-  await User.updateOne({ _id: userId }, { $inc: { tot_notes: -runNotesInt, tot_open_notes: -open } });
+  await User.updateOne(
+    { _id: userId },
+    { $inc: { tot_notes: -runNotesInt, tot_open_notes: -open } }
+  );
 };
 
 const deleteRun = async (runId, loggedUserId) => {
@@ -68,9 +77,24 @@ const deleteRun = async (runId, loggedUserId) => {
   if (loggedUserId !== userId) {
     throw new Error("You do not have permission to access this");
   }
+
+  const user = User.findOne({ _id: userId });
+  const { current_run } = user;
+
   await deleteRunNotes(runId, loggedUserId);
   await Run.deleteOne({ _id: runId });
-  await User.updateOne({ _id: userId }, { $inc: { tot_runs: -1 } });
+  console.log("ids:", current_run, runId);
+  if (current_run == runId) {
+    await User.updateOne(
+      { _id: userId },
+      {
+        $inc: { tot_runs: -1 },
+        $set: { current_run: null, currentRunUpdatedAt: null },
+      }
+    );
+  } else {
+    await User.updateOne({ _id: userId }, { $inc: { tot_runs: -1 } });
+  }
 };
 
 export default {

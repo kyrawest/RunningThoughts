@@ -25,6 +25,7 @@ if (currentRunTime !== null) {
     currentRunId = null;
   }
 }
+console.log(currentRunId);
 
 //TOGGLE OPEN VIEW
 //
