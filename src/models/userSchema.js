@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import plm from "passport-local-mongoose";
 
+//user model
 const userSchema = new mongoose.Schema(
   {
     schema: { type: Number, required: true, default: 1.0 },
