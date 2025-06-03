@@ -50,10 +50,15 @@ app.use(
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+const allowedOrigins = [
+  "http://localhost:3000", // local dev
+  "https://runningthoughts.onrender.com", // your deployed frontend
+];
+
 app.use(
   cors({
-    origin: "http://localhost:3000", // or "*" for Postman
-    credentials: true, // ❗ this is required to send cookies
+    origin: allowedOrigins,
+    credentials: true,
   })
 );
 
@@ -90,20 +95,6 @@ app.use((req, res, next) => {
 });
 
 app.use("/", router);
-// app.use("/", (err, req, res, next) => {
-//   console.error("Error:", err);
-//   if (err.status === 404) {
-//     return res.status(404).json({ message: "404 Not Found" });
-//   } else if (err.name === "CastError") {
-//     return res.status(400).json({ message: "Invalid ID format" });
-//   } else if (err.message === "User login failed") {
-//     return res.status(401).json({ message: "User login failed" });
-//   } else {
-//     res
-//       .status(err.status || 500)
-//       .json({ message: err.message || "Internal Server Error" });
-//   }
-// });
 
 app.use(notFound);
 
