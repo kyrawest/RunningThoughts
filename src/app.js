@@ -14,9 +14,30 @@ import cors from "cors";
 import methodOverride from "method-override";
 import flash from "connect-flash";
 import favicon from "serve-favicon";
+import helmet from "helmet";
 
 // Create expresss app
 export const app = express();
+
+//Setting up helemt
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://kit.fontawesome.com"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://ka-f.fontawesome.com",
+      ],
+      imgSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      connectSrc: ["'self'", "https://ka-f.fontawesome.com"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
 
 // View engine setup
 app.set("view engine", "ejs");

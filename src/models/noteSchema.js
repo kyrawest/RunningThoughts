@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const noteSchema = new mongoose.Schema(
   {
     schema: { type: Number, required: true, default: 1.0 },
-    content: { type: String, required: true },
+    content: { type: String, required: true, maxlength: 1000 },
     open: { type: Boolean, default: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,

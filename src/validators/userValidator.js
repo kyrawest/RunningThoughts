@@ -33,7 +33,7 @@ export const validateUsername = [
     .withMessage("Username is required")
     .isLength({ min: 1, max: 20 })
     .withMessage("Username must be between 1 and 20 characters")
-    // .matches(/^[a-zA-Z]+$/)
+    .matches(/^[a-zA-Z]+$/)
     .withMessage(
       "Username must must be letters, no numbers or special characters"
     ),

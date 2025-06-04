@@ -3,14 +3,28 @@ import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
 
 import mongoose from "mongoose";
+import sanitizeHtml from "sanitize-html";
 
 //CREATE
 const createNewNote = async (content, userId, runId) => {
+  content = sanitizeHtml(content, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
 
   const newNote = await Note.create({ content, userId, runId });
-  const run = await Run.findOneAndUpdate({ _id: runId }, { $inc: { tot_notes: 1, tot_open_notes: 1 } });
-  await User.updateOne({ _id: userId }, { $inc: { tot_notes: 1 , tot_open_notes: 1}, $set: {current_run: runId, currentRunUpdatedAt: run.updatedAt}});
-  
+  const run = await Run.findOneAndUpdate(
+    { _id: runId },
+    { $inc: { tot_notes: 1, tot_open_notes: 1 } }
+  );
+  await User.updateOne(
+    { _id: userId },
+    {
+      $inc: { tot_notes: 1, tot_open_notes: 1 },
+      $set: { current_run: runId, currentRunUpdatedAt: run.updatedAt },
+    }
+  );
+
   return newNote;
 };
 
@@ -25,7 +39,6 @@ const getNote = async (noteId) => {
 
 const updateNote = async (noteId, content, loggedUserId) => {
   //FUNCTION: update the content of a given note, return the note object
-
   const note = await getNote(noteId);
   const userId = note.userId.toString();
 
@@ -33,43 +46,53 @@ const updateNote = async (noteId, content, loggedUserId) => {
     throw new Error("You do not have permission to access this");
   }
 
-  const updatedNote = await Note.findOneAndUpdate({ _id: noteId }, { content }, { new: true } );
-  
+  content = sanitizeHtml(content, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+
+  const updatedNote = await Note.findOneAndUpdate(
+    { _id: noteId },
+    { content },
+    { new: true }
+  );
+
   return updatedNote;
 };
 
 const toggleOpen = async (noteId, loggedUserId) => {
   //FUNCTION: toggle open status of a given note
-const session = await mongoose.startSession();
-session.startTransaction();
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-try {
-  const note = await getNote(noteId);
-  const userId = note.userId.toString();
+  try {
+    const note = await getNote(noteId);
+    const userId = note.userId.toString();
 
-  if (userId !== loggedUserId) {
-    throw new Error("You do not have permission to access this");
+    if (userId !== loggedUserId) {
+      throw new Error("You do not have permission to access this");
+    }
+
+    //set the open status to the opposite of what it is now. !true = false, !false = true
+    const updatedNote = await Note.updateOne(
+      { _id: noteId },
+      { $set: { open: !note.open } }
+    );
+
+    const inc = note.open ? -1 : 1;
+    await User.updateOne({ _id: userId }, { $inc: { tot_open_notes: inc } });
+    await Run.updateOne({ _id: note.runId }, { $inc: { tot_open_notes: inc } });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+    throw error; // Handle the error
   }
-
-  //set the open status to the opposite of what it is now. !true = false, !false = true
-  const updatedNote = await Note.updateOne({ _id: noteId }, { $set: { open: !note.open }} );
-
-
-  const inc = note.open ? -1 : 1;
-  await User.updateOne({ _id: userId }, { $inc: { tot_open_notes: inc} });
-  await Run.updateOne({ _id: note.runId }, { $inc: { tot_open_notes: inc } });
-
-
-  await session.commitTransaction();
-  session.endSession();
-
-  return;
-} catch (error) {
-  await session.abortTransaction();
-  session.endSession();
-  throw error; // Handle the error
-}
-}
+};
 
 //DELETE
 
@@ -81,11 +104,16 @@ const deleteNote = async (noteId, loggedUserId) => {
     throw new Error("You do not have permission to access this");
   }
 
-
   await Note.deleteOne({ _id: noteId });
 
-  await User.updateOne({ _id: userId }, { $inc: { tot_notes: -1, tot_open_notes: open ? -1 : 0 } });
-  await Run.updateOne({ _id: runId }, { $inc: { tot_notes: -1, tot_open_notes: open ? -1 : 0 } });
+  await User.updateOne(
+    { _id: userId },
+    { $inc: { tot_notes: -1, tot_open_notes: open ? -1 : 0 } }
+  );
+  await Run.updateOne(
+    { _id: runId },
+    { $inc: { tot_notes: -1, tot_open_notes: open ? -1 : 0 } }
+  );
 };
 
 export default {
@@ -94,5 +122,4 @@ export default {
   updateNote,
   toggleOpen,
   deleteNote,
-
 };

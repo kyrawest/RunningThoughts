@@ -1,16 +1,17 @@
 import User from "../models/userSchema.js";
 import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
+import santitizeHtml from "sanitize-html";
 
 import mongoose from "mongoose";
 import plm from "passport-local-mongoose";
-import ArraySort from "array-sort";
 import createHttpError from "http-errors";
 
 //CREATE
 
 const register = async (email, password, username) => {
   // Register a new user
+
   const user = new User({
     email,
     username,

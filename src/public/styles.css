@@ -9,6 +9,20 @@
   font-style: italic;
 }
 
+html,
+body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
 /* sizing constaints for brand logo in top left of top nav bar */
 .nav-image {
   width: 50px;

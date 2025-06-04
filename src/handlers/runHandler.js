@@ -1,10 +1,13 @@
 import User from "../models/userSchema.js";
 import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
+import santitizeHtml from "sanitize-html";
 
 //CREATE
 
 const createNewRun = async ({ userId, title = "" }) => {
+  title = santitizeHtml(title, { allowedTags: [], allowedAttributes: {} });
+
   const newRun = await Run.create({ userId, title });
   await User.updateOne(
     { _id: userId },
@@ -36,6 +39,8 @@ const updateRun = async (runId, title, loggedUserId) => {
   if (loggedUserId !== userId) {
     throw new Error("You do not have permission to access this");
   }
+
+  title = santitizeHtml(title, { allowedTags: [], allowedAttributes: {} });
 
   const updatedRun = await Run.updateOne(
     { _id: runId },
