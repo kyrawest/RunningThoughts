@@ -79,7 +79,7 @@ userRouter.put(
 //DELETE
 
 const log = (req, res, next) => {
-  console.log("here");
+  console.log("here3");
   next();
 };
 

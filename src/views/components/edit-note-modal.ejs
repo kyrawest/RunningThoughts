@@ -7,7 +7,7 @@
   aria-hidden="true"
 >
   <div class="modal-dialog">
-    <div class="modal-content">
+    <form method="POST" class="modal-content" id="edit-note-form">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="editNoteModalLabel">Edit Note</h1>
         <button
@@ -19,6 +19,7 @@
       </div>
       <div class="modal-body">
         <div class="mb-3">
+          <input type="hidden" name="_method" value="PUT" />
           <label for="content" class="form-label">Note Content</label>
           <textarea
             class="form-control"
@@ -34,7 +35,7 @@
           Cancel
         </button>
         <button
-          type="button"
+          type="submit"
           class="btn btn-primary"
           id="save-changes-button"
           data-bs-dismiss="modal"
@@ -42,7 +43,7 @@
           Save changes
         </button>
       </div>
-    </div>
+    </form>
   </div>
 
   <!-- Mic Button -->

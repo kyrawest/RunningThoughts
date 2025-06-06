@@ -7,6 +7,7 @@
   >
     <div class="card-left d-flex flew-row">
       <form
+        id="toggle-form-<%= note._id %>"
         action="/notes/toggle-open/<%= note._id %>"
         method="POST"
         class="form-check d-flex align-items-center toggle-open-form"
@@ -16,7 +17,7 @@
         <input type="hidden" name="_method" value="PUT" />
         <input class="form-check-input fs-4" name="open" type="checkbox"
         value="" id="openCheckbox-<%= note._id %>" <%= note.open ? "" :
-        "checked" %> >
+        "checked" %>>
         <label
           class="form-check-label visually-hidden"
           for="openCheckbox-<%= note._id %>"

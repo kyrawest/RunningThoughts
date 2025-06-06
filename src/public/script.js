@@ -27,6 +27,29 @@ if (currentRunTime !== null) {
 }
 console.log(currentRunId);
 
+// Store the scroll position in sessionStorage or localStorage
+window.addEventListener("beforeunload", function () {
+  sessionStorage.setItem("scrollPosition", window.scrollY); // Use window.scrollY to get the current vertical scroll position
+});
+
+// Disable scroll restoration temporarily when redirecting
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual"; // Disable scroll restoration behavior only for this page
+}
+
+window.addEventListener("load", function () {
+  const savedScrollPosition = sessionStorage.getItem("scrollPosition");
+  if (savedScrollPosition) {
+    // Instantly scroll to the saved position without any animation
+    window.scrollTo(0, parseInt(savedScrollPosition, 10));
+  }
+
+  // Re-enable scroll restoration behavior after restoring scroll position
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "auto"; // Re-enable automatic scroll restoration
+  }
+});
+
 //TOGGLE OPEN VIEW
 //
 // Only show notes that are open
@@ -114,91 +137,22 @@ modal.addEventListener("shown.bs.modal", () => {
   if (recognition && isRecognizing) {
     recognition.stop();
   }
-});
 
-const speechMicButton = document.getElementById("speechMicButton");
-speechMicButton.addEventListener("click", async function () {
-  const runId = speechMicButton.dataset.runid;
-
-  content = speechDisplay.value;
-  content = content.charAt(0).toUpperCase() + content.slice(1);
-
+  form = document.getElementById("speechModalForm");
   if (pageRunId !== 0) {
-    await fetch(`/notes/new-note/${pageRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/notes/new-note/${pageRunId}`;
   } else if (currentRunId !== null) {
-    await fetch(`/notes/new-note/${currentRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/notes/new-note/${currentRunId}`;
   } else {
-    await fetch(`/runs/newRunWithNote`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/runs/newRunWithNote`;
   }
-  //close modal
-  const modal = bootstrap.Modal.getInstance(
-    document.getElementById("speechModal")
-  );
-  modal.hide();
 
-  //reset page
-  window.location.reload();
-});
-
-const nnCurrentButton = document.getElementById("nn-current-button");
-
-nnCurrentButton.addEventListener("click", async function () {
-  const runId = nnCurrentButton.dataset.runid;
-
-  content = speechDisplay.value;
-  content = content.charAt(0).toUpperCase() + content.slice(1);
-
-  if (pageRunId !== 0) {
-    await fetch(`/notes/new-note/${pageRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
-  } else if (currentRunId !== null) {
-    await fetch(`/notes/new-note/${currentRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
-  } else {
-    await fetch(`/runs/newRunWithNote`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
-  }
-  //close modal
-  const modal = bootstrap.Modal.getInstance(
-    document.getElementById("speechModal")
-  );
-  modal.hide();
-
-  //reset page
-  window.location.reload();
+  // Stop speech recognition when modal is closed
+  this.addEventListener("hide.bs.modal", () => {
+    if (recognition && isRecognizing) {
+      recognition.stop();
+    }
+  });
 });
 
 // TOGGLING OPEN STATE ON NOTE CARDS
@@ -213,6 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
       event.preventDefault();
       const url = form.action;
 
+      //using a client-side fetch here does mean that errors are not displayed
+      //on the client-side with req.flash() for toggling a ntoe open/closed as there is no page refresh.
       try {
         const response = await fetch(url, {
           method: "PUT",
@@ -237,8 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (noteCard) {
         noteCard.classList.toggle("closed-note");
       }
-      console.log(runCard);
-      console.log(runCard.dataset);
       if (runCard.dataset.opennotes == 0) {
         runCard.classList.toggle("closed-note");
       }
@@ -247,7 +201,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 //DLETING ALL NOTES FROM A RUN
 document.addEventListener("DOMContentLoaded", () => {
-  const deleteRunNotesModal = document.getElementById("deleteRunNotesModal");
   const deleteRunNotesForm = document.getElementById("deleteRunNotesForm");
 
   document.querySelectorAll(".delete-run-notes-button").forEach((button) => {
@@ -261,7 +214,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // DELETING AN ENTIRE RUN
 
 document.addEventListener("DOMContentLoaded", () => {
-  const deleteRunModal = document.getElementById("deleteRunModal");
   const deleteRunForm = document.getElementById("deleteRunForm");
 
   document.querySelectorAll(".delete-run-button").forEach((button) => {
@@ -285,39 +237,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-//UPDATING A RUN TITLE
-
-document.addEventListener("DOMContentLoaded", () => {
-  const editRunForm = document.querySelector("#editRunForm");
-
-  if (!editRunForm) {
-    return;
-  }
-
-  editRunForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const url = editRunForm.action;
-    const title = document.querySelector("#editRunTitle").value;
-    console.log(title);
-
-    try {
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update run title");
-      }
-      console.log("here");
-      window.location.reload();
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  });
-});
-
 //Editing a note
 
 const editNoteModal = document.getElementById("editNoteModal");
@@ -327,12 +246,10 @@ if (editNoteModal) {
     const button = event.relatedTarget;
     // Extract info from data-bs-* attributes
     const noteId = button.getAttribute("data-bs-noteid");
-    // If necessary, you could initiate an Ajax request here
-    // and then do the updating in a callback.
     const startingContent = document.querySelector(
       `#note-${noteId}-content`
-    ).textContent;
-    startingText = startingContent;
+    ).innerText;
+    startingText = startingContent.trim();
     // Update the modal's content.
     const modalContent = editNoteModal.querySelector(
       "#edit-note-modal-content"
@@ -361,33 +278,14 @@ if (editNoteModal) {
       }
     });
 
-    // Update note with save button clicked
-    const saveButton = editNoteModal.querySelector("#save-changes-button");
+    // Set the action of this form to the specified note
+    const editNoteForm = editNoteModal.querySelector("#edit-note-form");
 
-    saveButton.addEventListener("click", async (event) => {
-      event.preventDefault();
-      const url = `/notes/${noteId}`;
-      const content = modalContent.value;
-
-      try {
-        const response = await fetch(`/notes/${noteId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update note");
-        }
-        window.location.reload();
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    });
+    editNoteForm.action = `/notes/${noteId}`;
   });
 }
 
-//NEw note without initial speech recognition
+// NEw note without initial speech recognition
 
 // Start speech-to-text when #edit-mic is pressed
 const newMic = document.querySelector(`#new-mic`);
@@ -416,42 +314,22 @@ const submitNewButton = document.getElementById("submit-new-button");
 
 submitNewButton.addEventListener("click", async function () {
   console.log("click");
-  const runId = submitNewButton.dataset.runid;
 
   let content = document.getElementById("new-note-modal-content").value;
   content = content.charAt(0).toUpperCase() + content.slice(1);
 
+  form = document.getElementById("newModalForm");
   if (pageRunId !== 0) {
-    await fetch(`/notes/new-note/${pageRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/notes/new-note/${pageRunId}`;
   } else if (currentRunId !== null) {
-    await fetch(`/notes/new-note/${currentRunId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/notes/new-note/${currentRunId}`;
   } else {
-    await fetch(`/runs/newRunWithNote`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ content }),
-    });
+    form.action = `/runs/newRunWithNote`;
   }
+
   //close modal
   const modal = bootstrap.Modal.getInstance(
     document.getElementById("newNoteModal")
   );
   modal.hide();
-
-  //reset page
-  window.location.reload();
 });

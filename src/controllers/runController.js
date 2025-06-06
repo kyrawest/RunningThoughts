@@ -36,8 +36,7 @@ const createNewRunWithNote = async (req, res, next) => {
   try {
     const run = await runHandler.createNewRun(payload);
     await noteHandler.createNewNote(content, userId, run._id);
-    res.status(201);
-    res.redirect(`/run/${run._id}`);
+    res.redirect(303, `/run/${run._id}`);
   } catch (err) {
     next(err);
   }

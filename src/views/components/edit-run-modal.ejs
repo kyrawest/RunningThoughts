@@ -7,7 +7,12 @@
   aria-hidden="true"
 >
   <div class="modal-dialog" role="document">
-    <div class="modal-content">
+    <form
+      class="modal-content"
+      id="editRunForm"
+      action="/runs/<%= run._id%>"
+      method="POST"
+    >
       <div class="modal-header">
         <h5 class="modal-title" id="editRunModalLabel">Add / Update Title</h5>
         <button
@@ -33,14 +38,13 @@
         >
       </div>
       <div class="modal-footer">
-        <form id="editRunForm" action="/runs/<%= run._id%>" method="POST">
-          <input type="hidden" name="_method" value="PUT" />
-          <button type="submit" class="btn btn-primary">Update title</button>
-        </form>
+        <input type="hidden" name="_method" value="PUT" />
+        <button type="submit" class="btn btn-primary">Update title</button>
+
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
       </div>
-    </div>
+    </form>
   </div>
 </div>

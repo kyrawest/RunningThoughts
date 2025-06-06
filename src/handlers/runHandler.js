@@ -83,12 +83,12 @@ const deleteRun = async (runId, loggedUserId) => {
     throw new Error("You do not have permission to access this");
   }
 
-  const user = User.findOne({ _id: userId });
-  const { current_run } = user;
+  //get the current run for this user so we can check if we need to reset it later
+  const user = await User.findById(userId).select("current_run").lean();
+  const current_run = user?.current_run;
 
   await deleteRunNotes(runId, loggedUserId);
   await Run.deleteOne({ _id: runId });
-  console.log("ids:", current_run, runId);
   if (current_run == runId) {
     await User.updateOne(
       { _id: userId },

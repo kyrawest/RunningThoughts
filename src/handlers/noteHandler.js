@@ -4,6 +4,7 @@ import Note from "../models/noteSchema.js";
 
 import mongoose from "mongoose";
 import sanitizeHtml from "sanitize-html";
+import createHttpError from "http-errors";
 
 //CREATE
 const createNewNote = async (content, userId, runId) => {
@@ -11,12 +12,21 @@ const createNewNote = async (content, userId, runId) => {
     allowedTags: [],
     allowedAttributes: {},
   });
+  content = content.trim().charAt(0).toUpperCase() + content.slice(1);
 
   const newNote = await Note.create({ content, userId, runId });
   const run = await Run.findOneAndUpdate(
     { _id: runId },
     { $inc: { tot_notes: 1, tot_open_notes: 1 } }
   );
+  console.log(run);
+  if (!run) {
+    throw new createHttpError(
+      404,
+      "Cannot add a note to a run that does not exist. Try creating a new run and trying again!"
+    );
+  }
+
   await User.updateOne(
     { _id: userId },
     {
@@ -50,6 +60,7 @@ const updateNote = async (noteId, content, loggedUserId) => {
     allowedTags: [],
     allowedAttributes: {},
   });
+  content = content.trim().charAt(0).toUpperCase() + content.slice(1);
 
   const updatedNote = await Note.findOneAndUpdate(
     { _id: noteId },

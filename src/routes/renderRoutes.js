@@ -14,13 +14,32 @@ const renderRouter = Router();
 
 //READ
 
+const log3 = (req, res, next) => {
+  console.log("here / in render");
+  next();
+};
+
+const log5 = (req, res, next) => {
+  console.log("here /dashboard");
+  next();
+};
+
 renderRouter.get("/login", catchErrors(renderController.login));
 
 renderRouter.get("/register", catchErrors(renderController.register));
 
+const sessionLog = (req, res, next) => {
+  console.log("session at /dashboard route:", req.session);
+  next();
+};
+
 renderRouter.get(
   "/dashboard",
   isLoggedIn,
+  (req, res, next) => {
+    res.set("Cache-Control", "no-store");
+    next();
+  },
   catchErrors(renderController.dashboard)
 );
 

@@ -20,7 +20,7 @@
   aria-hidden="true"
 >
   <div class="modal-dialog">
-    <div class="modal-content">
+    <form method="POST" class="modal-content" id="speechModalForm">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="speechModalLabel">New note</h1>
         <button
@@ -46,8 +46,9 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           Cancel
         </button>
+
         <button
-          type="button"
+          type="submit"
           class="btn btn-primary"
           id="nn-current-button"
           data-runid="<%= runId %>"
@@ -55,14 +56,14 @@
           Create Note
         </button>
       </div>
-    </div>
+    </form>
   </div>
   <button
+    type="submit"
+    form="speechModalForm"
     id="speechMicButton"
     class="mic-button btn btn-lg shadow-lg btn-danger rounded-circle"
     title="Start Voice Input"
-    data-bs-toggle="modal"
-    data-bs-target="#speechModal"
     data-runid="<%= runId %>"
   >
     <i class="fas fa-microphone"></i>
