@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Jog your memory with RunningThoughts! Capture notes while out on your runs to organize your thoughts with intuitive speech-to-text. Boost productivity and never forget a brilliant idea.">
     <title>Login</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/styles.css" />
@@ -14,44 +15,62 @@
     <main class="mt-1 mt-md-3">
       <% if (flashMessages.error && flashMessages.error.length > 0) { %> <%
         flashMessages.error.forEach(function(msg) { %>
-        <div class="alert alert-dismissible alert-warning container">
+        <div class="mt-3 alert alert-dismissible alert-warning container" role="alert" aria-live="assertive">
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           <h4 class="alert-heading">Error</h4>
           <p class="mb-0"><%= msg %></p>
         </div>
         <% }) %> <% } %>
+        <% if (flashMessages.success &&
+      flashMessages.success.length > 0) { %> <%
+      flashMessages.success.forEach(function(msg) { %>
+      <div class="mt-3 alert alert-dismissible alert-success container" role="alert" aria-live="polite">
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+        ></button>
+        <h4 class="alert-heading">Success!</h4>
+        <p class="mb-0"><%= msg %></p>
+      </div>
+      <% }) %> <% } %>
 
-<div class="container-fluid">
+      <div class="container-fluid">
         <div class="row">
         <div class="col-md-7 col-12 mb-md-3 mb-1 d-flex justify-content-center align-items-md-center align-items-end" id="large-logo">
-          <img src="/images/jym-large-logo.png" alt="JYM Logo, RUNNINGTHOUGHTS, JOG YOUR MEMORY" class="img-fluid h-75"/>
+          <img src="/images/jym-large-logo.png" alt="Running thoughts Logo, RUNNINGTHOUGHTS, JOG YOUR MEMORY" class="img-fluid h-75"/>
       </div>
   
-  <div class="col-md-4 col-12 d-flex flex-column justify-content-md-center justify-content-start position-relative bottom-5">
+      <div class="col-md-4 col-12 d-flex flex-column justify-content-md-center justify-content-start position-relative bottom-5">
         <h1 class="container mb-3">Register</h1>
     
-        <form action="/users/register" method="POST" class="mb-3 container">
+        <form action="/users/register" method="POST" class="mb-3 container" autocomplete="on">
           <div class="mb-3 form-floating">
-            <input type="email" id="emailInput" name="email" class="form-control" placeholder="name@example.com" required />
+            <input type="email" id="emailInput" name="email" class="form-control" placeholder="name@example.com" required autocomplete="email"/>
             <label for="emailInput" class="form-label">Email</label>
           </div>
-          
+
           <div class="mb-3 form-floating">
-            <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Password" required />
-            <label for="password" class="form-label">Password</label>
-            
-          </div>
-    
-          <div class="mb-3 form-floating">
-            <input type="text" id="usernameInput" name="username" class="form-control" aria-describedby="usernameHelp" placeholder="Name"required />
-            <label for="username" class="form-label">Name</label>
+            <input type="text" id="usernameInput" name="username" class="form-control" aria-describedby="usernameHelp" placeholder="Name" required autocomplete="given-name"/>
+            <label for="usernameInput" class="form-label">Name</label>
             
             <div id="usernameHelp" class="form-text">What should we call you?</div>
           </div>
           
+          <div class="mb-3 form-floating">
+            <input type="password" id="passwordInput" name="password" class="form-control" placeholder="Password" required autocomplete="new-password"/>
+            <label for="passwordInput" class="form-label">Password</label>
+            
+          </div>
+
+          <div class="mb-3 form-floating">
+            <input type="password" id="confirmPasswordInput" name="confirmPassword" class="form-control" placeholder="Confirm Password" required autocomplete="new-password"/>
+            <label for="confirmPasswordInput" class="form-label">Confirm Password</label>
+            
+          </div>
+    
           <button type="submit" class="btn btn-primary">Sign Up</button>
-          <a href="/login">      
-            <button type="button" class="btn btn-secondary">Already have an account?</button>
+          <a href="/login"class="btn btn-secondary">Already have an account?
           </a>
         </form>
   </div>

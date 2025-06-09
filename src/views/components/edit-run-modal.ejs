@@ -20,11 +20,12 @@
           class="btn-close"
           data-bs-dismiss="modal"
           aria-label="Close"
-        >
-          <span aria-hidden="true"></span>
-        </button>
+        ></button>
       </div>
       <div class="modal-body">
+        <label for="editRunTitle" class="form-label visually-hidden"
+          >Run Title</label
+        >
         <input
           type="text"
           class="form-control"
@@ -33,9 +34,6 @@
           required
           name="title"
         />
-        <label for="editRunTitle" class="form-label visually-hidden"
-          >Run Title</label
-        >
       </div>
       <div class="modal-footer">
         <input type="hidden" name="_method" value="PUT" />

@@ -1,4 +1,4 @@
-<%- include('partials/header', {title, user, runid: run._id}) %>
+<%- include('partials/header', {title, runid: run._id}) %>
 
 <div class="d-flex flex-row justify-content-between mb-4 container">
   <div class="left d-flex flex-column">
@@ -21,6 +21,7 @@
       data-bs-toggle="dropdown"
       aria-haspopup="true"
       aria-expanded="false"
+      aria-label="Run actions"
     ></button>
     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
       <a
@@ -29,8 +30,8 @@
         data-bs-target="#editRunModal"
         data-runid="<%= run._id %>"
       >
-        Add / edit title</a
-      >
+        Add / edit title
+      </a>
       <a
         class="delete-run-button dropdown-item"
         data-bs-toggle="modal"
@@ -44,11 +45,13 @@
         data-bs-toggle="modal"
         data-bs-target="#deleteRunNotesModal"
         data-runid="<%= run._id %>"
-        >Delete all notes</a
       >
+        Delete all notes
+      </a>
     </div>
   </div>
 </div>
+
 <div class="container mb-3">
   <div class="row">
     <form
@@ -69,7 +72,7 @@
     <div
       class="btn-group col-sm-3 col-12"
       role="group"
-      aria-label="Basic radio toggle button group"
+      aria-label="Filter notes by open or closed status"
     >
       <input
         type="radio"

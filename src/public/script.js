@@ -1,6 +1,4 @@
 //FETCH DATA FROM THE FOOTER
-//
-//
 
 const dataContainer = document.getElementById("data-container");
 const { user, runid } = JSON.parse(dataContainer.innerHTML);
@@ -20,35 +18,13 @@ const withinXHours = (date, hours) => {
   return diffHours < hours;
 };
 
+// If the user has a current run, check if it is within 2 hours of now. Dsable the corresponding nav button if not.
 if (currentRunTime !== null) {
   if (!withinXHours(currentRunTime, 2)) {
     currentRunId = null;
+    document.getElementById("current-run-nav").classList.add("disabled");
   }
 }
-console.log(currentRunId);
-
-// Store the scroll position in sessionStorage or localStorage
-window.addEventListener("beforeunload", function () {
-  sessionStorage.setItem("scrollPosition", window.scrollY); // Use window.scrollY to get the current vertical scroll position
-});
-
-// Disable scroll restoration temporarily when redirecting
-if ("scrollRestoration" in history) {
-  history.scrollRestoration = "manual"; // Disable scroll restoration behavior only for this page
-}
-
-window.addEventListener("load", function () {
-  const savedScrollPosition = sessionStorage.getItem("scrollPosition");
-  if (savedScrollPosition) {
-    // Instantly scroll to the saved position without any animation
-    window.scrollTo(0, parseInt(savedScrollPosition, 10));
-  }
-
-  // Re-enable scroll restoration behavior after restoring scroll position
-  if ("scrollRestoration" in history) {
-    history.scrollRestoration = "auto"; // Re-enable automatic scroll restoration
-  }
-});
 
 //TOGGLE OPEN VIEW
 //
@@ -56,24 +32,6 @@ window.addEventListener("load", function () {
 
 const toggleOpenView = document.querySelector("#toggleOpenView");
 const toggleAllView = document.querySelector("#toggleAllView");
-
-toggleOpenView.addEventListener("click", () => {
-  console.log("click");
-  const closedNotesAndRuns = document.querySelectorAll(".closed-note");
-
-  closedNotesAndRuns.forEach((note) => {
-    note.classList.toggle("d-none");
-  });
-});
-
-toggleAllView.addEventListener("click", () => {
-  console.log("click");
-  const closedNotesAndRuns = document.querySelectorAll(".closed-note");
-
-  closedNotesAndRuns.forEach((note) => {
-    note.classList.toggle("d-none");
-  });
-});
 
 //Speech Recognition
 //
@@ -125,7 +83,7 @@ if (recognition) {
   };
 }
 
-// Start recognition when modal opens
+// Start recognition when speech modal opens
 const modal = document.getElementById("speechModal");
 modal.addEventListener("shown.bs.modal", () => {
   if (recognition && !isRecognizing) {
@@ -140,11 +98,11 @@ modal.addEventListener("shown.bs.modal", () => {
 
   form = document.getElementById("speechModalForm");
   if (pageRunId !== 0) {
-    form.action = `/notes/new-note/${pageRunId}`;
+    form.action = `/notes/${pageRunId}`;
   } else if (currentRunId !== null) {
-    form.action = `/notes/new-note/${currentRunId}`;
+    form.action = `/notes/${currentRunId}`;
   } else {
-    form.action = `/runs/newRunWithNote`;
+    form.action = `/runs/with-note`;
   }
 
   // Stop speech recognition when modal is closed
@@ -158,6 +116,23 @@ modal.addEventListener("shown.bs.modal", () => {
 // TOGGLING OPEN STATE ON NOTE CARDS
 //
 //
+
+toggleOpenView.addEventListener("click", () => {
+  const closedNotesAndRuns = document.querySelectorAll(".closed-note");
+
+  closedNotesAndRuns.forEach((note) => {
+    note.classList.toggle("d-none");
+  });
+});
+
+toggleAllView.addEventListener("click", () => {
+  console.log("click");
+  const closedNotesAndRuns = document.querySelectorAll(".closed-note");
+
+  closedNotesAndRuns.forEach((note) => {
+    note.classList.toggle("d-none");
+  });
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleOpenForms = document.querySelectorAll(".toggle-open-form");
@@ -199,7 +174,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-//DLETING ALL NOTES FROM A RUN
+
+//DELETING ALL NOTES FROM A RUN
 document.addEventListener("DOMContentLoaded", () => {
   const deleteRunNotesForm = document.getElementById("deleteRunNotesForm");
 
@@ -212,7 +188,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // DELETING AN ENTIRE RUN
-
 document.addEventListener("DOMContentLoaded", () => {
   const deleteRunForm = document.getElementById("deleteRunForm");
 
@@ -231,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".delete-note-button").forEach((button) => {
     button.addEventListener("click", () => {
       const noteId = button.dataset.noteid;
-      console.log(noteId);
       deleteNoteForm.action = `/notes/${noteId}`;
     });
   });
@@ -285,7 +259,7 @@ if (editNoteModal) {
   });
 }
 
-// NEw note without initial speech recognition
+// New note without initial speech recognition
 
 // Start speech-to-text when #edit-mic is pressed
 const newMic = document.querySelector(`#new-mic`);
@@ -320,11 +294,11 @@ submitNewButton.addEventListener("click", async function () {
 
   form = document.getElementById("newModalForm");
   if (pageRunId !== 0) {
-    form.action = `/notes/new-note/${pageRunId}`;
+    form.action = `/notes/${pageRunId}`;
   } else if (currentRunId !== null) {
-    form.action = `/notes/new-note/${currentRunId}`;
+    form.action = `/notes/${currentRunId}`;
   } else {
-    form.action = `/runs/newRunWithNote`;
+    form.action = `/runs/with-note`;
   }
 
   //close modal

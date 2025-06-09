@@ -1,86 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><%= title %></title>
-<!-- Preload key fonts (adjust URLs if needed) -->
-<link rel="preload" href="
-https://fonts.gstatic.com/s/edusabeginner/v3/rnCw-xRb1x-1lHXnLaZZ2xOoLIG1X1oNILVaqA.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-<link rel="preload" href="https://fonts.gstatic.com/s/patrickhand/v23/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2" as="font" type="font/woff2" crossorigin="anonymous">
-
-
-    <link rel="stylesheet" href="/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Patrick+Hand&display=swap" rel="stylesheet">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Jog your memory with RunningThoughts! Capture notes while out on your runs to organize your thoughts with intuitive speech-to-text. Boost productivity and never forget a brilliant idea.">
+  <title><%= title %></title>
+<!-- Preloading fonts to help with FCP time on mobile -->
+  <link rel="preload" href="https://fonts.gstatic.com/s/edusabeginner/v3/rnCw-xRb1x-1lHXnLaZZ2xOoLIG1X1oNILVaqA.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+  <link rel="preload" href="https://fonts.gstatic.com/s/patrickhand/v23/LDI1apSQOAYtSuYWp8ZhfYe8XsLLubg58w.woff2" as="font" type="font/woff2" crossorigin="anonymous">  
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Edu+SA+Beginner:wght@400..700&family=Patrick+Hand&display=swap" rel="stylesheet">
 <!-- fontawesome icons -->
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<script
-src="https://kit.fontawesome.com/5a2d9997c1.js"
-crossorigin="anonymous"
-></script>
-  </head>
-  <body class="bg-darkish text-light">
-    
-    <nav class="navbar navbar-expand-md fixed-top bg-primary" data-bs-theme="light">
-        <div class="container">
-            <a class="navbar-brand " href="/dashboard">
-              <image src="/images/jym-logo-sm-dark-slim-compr.svg" alt="JYM logo" class="img-fluid nav-image"></image>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarContent">
-              <ul class="navbar-nav me-auto">
-                <li class="nav-item <%= title == 'Dashboard' ? 'active' : ''%>" <%= title == 'Dashboard' ? 'aria-current="page"' : '' %>>
-                  <a class="nav-link" href="/dashboard">Home
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link <%= user['current_run'] == null ? 'disabled' : '' %><%= user['current_run'] == runid.toString() ? 'active' : '' %>" <%= user['current_run'] == runid.toString() ? 'aria-current="page"' : ''%> href="/run/<%= user.current_run %>">Current Run</a>
-                </li>
-                <li class="nav-item">
-                  <form class="d-inline" action="/runs/newRun" method="POST">
-                  <button type="submit" class="nav-link" href="/runs/newRun">New Run</button>
-                  </form>
-                </li>
-                <li class="nav-item">
-                  <a data-bs-toggle="modal"
-                  data-bs-target="#newNoteModal"
-                   class="nav-link">New Note</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
-                  <div class="dropdown-menu">
-                    <a class="dropdown-item" href="/account-settings">Settings</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="/users/logout">Log Out</a>
-                  </div>
-                </li>
-              </ul>
-            </div>
-        </div>
-    </nav>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="https://kit.fontawesome.com/5a2d9997c1.js" crossorigin="anonymous"> </script>
+</head>
 
-    <main class="pt-5 mt-5 d-flex flex-column justify-content-center">
-      <% if (flashMessages.error && flashMessages.error.length > 0) { %> <%
-        flashMessages.error.forEach(function(msg) { %>
-        <div class="alert alert-dismissible alert-warning container">
+<body class="bg-darkish text-light">
+  
+  <nav class="navbar navbar-expand-md fixed-top bg-primary mb-3" data-bs-theme="light" role="navigation" aria-label="Main site navigation">
+      <div class="container">
+          <a class="navbar-brand " href="/dashboard">
+            <img src="/images/jym-logo-sm-dark-slim-compr.svg" alt="Running Thoughts Logo Brain" class="img-fluid nav-image"></img>
+          </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item <%= title == 'Dashboard' ? 'active' : ''%>" <%= title == 'Dashboard' ? 'aria-current="page"' : '' %>>
+                <a class="nav-link" href="/dashboard">Home
+                </a>
+              </li>
+              <li class="nav-item">
+                <a id="current-run-nav" class="nav-link <%= user['current_run'] == null ? 'disabled' : '' %><%= user['current_run'] == runid.toString() ? 'active' : '' %>" <%= user['current_run'] == runid.toString() ? 'aria-current="page"' : ''%> href="/run/<%= user.current_run %>">Current Run</a>
+              </li>
+              <li class="nav-item">
+                <form class="d-inline" action="/runs" method="POST">
+                <button type="submit" class="nav-link" aria-label="Create new run">New Run</button>
+                </form>
+              </li>
+              <li class="nav-item">
+                <a 
+                href="#"
+                data-bs-toggle="modal"
+                data-bs-target="#newNoteModal"
+                class="nav-link"
+                role="button">
+                New Note
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><%= user.username %></a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="/account-settings">Settings</a>
+                  <div class="dropdown-divider"></div>
+                  <form action="/users/logout" method="POST">
+                    <button class="dropdown-item" type="submit" aria-label="Log out">Log Out</button>
+                  </form>
+                </div>
+              </li>
+            </ul>
+          </div>
+      </div>
+  </nav>
+
+  <main class="pt-5 mt-5 d-flex flex-column justify-content-start align-items-center">
+    <% if (flashMessages.error && flashMessages.error.length > 0) { %> <%
+      flashMessages.error.forEach(function(msg) { %>
+      <div class="alert alert-dismissible alert-warning container" role="alert">
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <h4 class="alert-heading">Error</h4>
+        <p class="mb-0"><%= msg %></p>
+      </div>
+      <% }) %> <% } %>
+
+      <% if (flashMessages.success && flashMessages.success.length > 0) { %> <%
+        flashMessages.success.forEach(function(msg) { %>
+        <div class="alert alert-dismissible alert-success container" role="alert">
           <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          <h4 class="alert-heading">Error</h4>
+          <h4 class="alert-heading">Success!</h4>
           <p class="mb-0"><%= msg %></p>
         </div>
         <% }) %> <% } %>
-
-        <% if (flashMessages.success && flashMessages.success.length > 0) { %> <%
-          flashMessages.success.forEach(function(msg) { %>
-          <div class="alert alert-dismissible alert-success container">
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            <h4 class="alert-heading">Success!</h4>
-            <p class="mb-0"><%= msg %></p>
-          </div>
-          <% }) %> <% } %>
-          <div id="client-side-alerts-container" class="container">
-          </div>
+        <div id="client-side-alerts-container" class="container">
+        </div>

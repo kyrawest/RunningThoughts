@@ -5,7 +5,7 @@
   <div
     class="card-body d-flex flex-row justify-content-between align-items-center"
   >
-    <div class="card-left d-flex flew-row">
+    <div class="card-left d-flex flex-row">
       <form
         id="toggle-form-<%= note._id %>"
         action="/notes/toggle-open/<%= note._id %>"
@@ -16,8 +16,8 @@
       >
         <input type="hidden" name="_method" value="PUT" />
         <input class="form-check-input fs-4" name="open" type="checkbox"
-        value="" id="openCheckbox-<%= note._id %>" <%= note.open ? "" :
-        "checked" %>>
+        value="" id="openCheckbox-<%= note._id %>" aria-label="Toggle open or
+        closed" <%= note.open ? "" : "checked" %>>
         <label
           class="form-check-label visually-hidden"
           for="openCheckbox-<%= note._id %>"
@@ -26,12 +26,12 @@
         </label>
       </form>
       <div class="card-content">
-        <h3
-          class="card-text patrick-hand-regular"
+        <p
+          class="card-text patrick-hand-regular display-6"
           id="note-<%= note._id %>-content"
         >
           <%= note.content %>
-        </h3>
+        </p>
         <p class="card-subtitle text-muted">
           <% const d = new Date(note.createdAt); const time =
           d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit',
@@ -56,6 +56,7 @@
           class="btn btn-warning delete-note-button"
           data-bs-toggle="modal"
           data-bs-target="#deleteNoteModal"
+          aria-label="Delete note"
         >
           <i class="fa-solid fa-trash"></i>
         </button>
@@ -69,23 +70,28 @@
           data-bs-toggle="dropdown"
           aria-haspopup="true"
           aria-expanded="false"
+          aria-label="Note options"
         ></button>
-        <div class="dropdown-menu" aria-labelledby="btnGroupDrop2">
-          <a
+        <div
+          class="dropdown-menu"
+          aria-labelledby="note-<%= note._id %>-dropdown"
+        >
+          <button
             data-bs-noteid="<%= note._id %>"
             class="dropdown-item"
             data-bs-toggle="modal"
             data-bs-target="#editNoteModal"
-            >Edit</a
           >
-          <a
+            Edit
+          </button>
+          <button
             data-noteid="<%= note._id %>"
             class="delete-note-button dropdown-item"
             data-bs-toggle="modal"
             data-bs-target="#deleteNoteModal"
           >
             Delete
-          </a>
+          </button>
         </div>
       </div>
     </div>

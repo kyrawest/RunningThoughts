@@ -1,4 +1,9 @@
+import createHttpError from "http-errors";
+
 export const isLoggedIn = (req, res, next) => {
+  // Middleware to check if the user is logged in
+  // If the user is authenticated, proceed to the next middleware or route handler
+  // If not authenticated, redirect to login page with flash messages
   if (req.isAuthenticated()) {
     return next();
   }
@@ -34,11 +39,10 @@ export const isLoggedIn = (req, res, next) => {
 };
 
 export const isAuthorized = (req, res, next) => {
+  //For routes that have userId in params, check if it matches req.user._id. If not, throw 403 error.
   if (req.user._id.toString() == req.params.userId) {
     return next();
   } else {
-    res
-      .status(403)
-      .json({ message: "You do not have permission to access this" });
+    throw new createHttpError(403, "You do not have permission to access this");
   }
 };

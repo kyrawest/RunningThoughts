@@ -1,10 +1,9 @@
 import User from "../models/userSchema.js";
 import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
-import santitizeHtml from "sanitize-html";
+import sanitizeHtml from "sanitize-html";
 
 import mongoose from "mongoose";
-import plm from "passport-local-mongoose";
 import createHttpError from "http-errors";
 
 //CREATE
@@ -12,36 +11,36 @@ import createHttpError from "http-errors";
 const register = async (email, password, username) => {
   // Register a new user
 
+  //Sanitize username
+  username = sanitizeHtml(username, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+  username = username.trim().charAt(0).toUpperCase() + username.slice(1);
+
+  //Generate user from schema
   const user = new User({
     email,
     username,
   });
 
+  //catch passport specific errors
   try {
-    const registeredUser = await User.register(user, password);
-    return registeredUser;
+    await User.register(user, password);
   } catch (err) {
-    // Check for specific error and provide custom messages
     if (err.name === "MissingPasswordError") {
       throw createHttpError(400, "Password must exist");
     }
     if (err.name === "UserExistsError") {
       throw createHttpError(409, "User with this email already exists");
     }
-    if (err.name === "IncorrectPasswordError") {
-      throw new Error("Incorrect password.");
-    }
-    if (err.name === "IncorrectUsernameError") {
-      throw new Error("Incorrect email.");
-    }
-
-    // Catch any unexpected errors
-    throw err; // Propagate other errors
+    // Catch any errors not described here
+    throw err;
   }
 };
 
 const login = async (email, password) => {
-  // Login a user
+  // Login a user with passport
   const authentication = await User.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
@@ -49,7 +48,7 @@ const login = async (email, password) => {
   if (!authentication.user || authentication.error) {
     throw createHttpError(
       401,
-      `Login failed: ${authentication.error?.message}` || "Login failed"
+      `Login failed: ${authentication.error?.message}` || "Login failed."
     );
   }
   return authentication;
@@ -58,15 +57,18 @@ const login = async (email, password) => {
 //READ
 
 const getThisUserRuns = async (userId, pageNumber) => {
+  //FUNCTION: Finds the runs for a given userId based on page number and returns them as an array in JSON format
+  // Returns max 10 runs according to pagination.
+
   const limit = pageNumber * 10;
   const skip = limit - 10;
-  //FUNCTION: Finds the runs for a given userId based on page number and returns them as an array
+
+  // sorts by most recent update
   return await Run.find({ userId })
     .sort({ updatedAt: -1 })
     .skip(skip)
     .limit(limit)
     .lean();
-  // return ArraySort(runs, "updatedAt", { reverse: true });
 };
 
 const getThisUserRunIds = async (userId) => {
@@ -74,44 +76,7 @@ const getThisUserRunIds = async (userId) => {
   return await Run.distinct("_id", { userId });
 };
 
-const getUser = async (userId) => {
-  //FUNCTION: return one user
-
-  return await User.findOne({ _id: userId }).lean();
-};
-
 //UPDATE
-
-const updateUser = async (userId, keyValue) => {
-  //FUNCTION: takes a {key:value} pair like {tot_notes: "0"} and updates the corresponding document parameter
-
-  //Use try/catch here to gracefully handle duplicate email errors.
-  try {
-    const updatedUser = await User.updateOne(
-      { _id: userId },
-      { $set: keyValue }
-    );
-    return updatedUser;
-  } catch (err) {
-    if (err.code == 11000) {
-      throw new createHttpError(
-        409,
-        "An account with this email already exists."
-      );
-    }
-    throw err;
-  }
-};
-
-const setUserPassword = async (userId, newPassword) => {
-  //FUNCTION: sets a new password for a user
-
-  const user = await User.findOne({ _id: userId });
-
-  const updatedUser = await user.setPassword(newPassword);
-
-  return updatedUser;
-};
 
 const updatePassword = async (
   userId,
@@ -119,7 +84,7 @@ const updatePassword = async (
   newPassword,
   confirmPassword
 ) => {
-  //change user password
+  //Update user password if they have given the correct old password and if their new password matches confirm password.
 
   if (newPassword !== confirmPassword) {
     throw createHttpError(
@@ -139,27 +104,74 @@ const updatePassword = async (
   await user.changePassword(currentPassword, newPassword);
 };
 
+const updateUser = async (userId, keyValue) => {
+  //FUNCTION: takes a {key:value} pair like {username: "Kyra"} or email and updates the corresponding document parameter.
+
+  //Using try/catch here to gracefully handle duplicate email errors.
+  try {
+    const updatedUser = await User.updateOne(
+      { _id: userId },
+      { $set: keyValue }
+    );
+    return updatedUser;
+  } catch (err) {
+    if (err.code == 11000) {
+      throw new createHttpError(
+        409,
+        "An account with this email already exists."
+      );
+    }
+    throw err;
+  }
+};
+
+// Only comment back in for development - can be used to update passwords without knowing the old password
+// const setUserPassword = async (userId, newPassword) => {
+//   //FUNCTION: sets a new password for a user
+
+//   const user = await User.findOne({ _id: userId });
+
+//   const updatedUser = await user.setPassword(newPassword);
+
+//   return updatedUser;
+// };
+
 //DELETE
 
 const deleteUserContent = async (userId) => {
   //FUNCTION: deletes all runs and notes associated with a user, sets tot_runs and tot_notes for a user to zero
 
-  await Note.deleteMany({ userId });
-  await Run.deleteMany({ userId });
+  //Start mongoose transaction since we are altering multiple documents.
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  await User.updateOne(
-    { _id: userId },
-    {
-      $set: {
-        tot_notes: 0,
-        tot_runs: 0,
-        tot_open_notes: 0,
-        current_run: null,
-        currentRunUpdatedAt: null,
-      },
-    }
-  );
-  return;
+  try {
+    await Note.deleteMany({ userId }).session(session);
+    await Run.deleteMany({ userId }).session(session);
+
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          tot_notes: 0,
+          tot_runs: 0,
+          tot_open_notes: 0,
+          current_run: null,
+          currentRunUpdatedAt: null,
+        },
+      }
+    ).session(session);
+
+    //If all goes well, commit the transcation and end the function.
+    await session.commitTransaction();
+    session.endSession();
+    return;
+  } catch (error) {
+    //if we tripped up during the transaction, don't commit any of these changes.
+    await session.abortTransaction();
+    session.endSession();
+    throw error; // Throw the error out to controller.
+  }
 };
 
 const deleteUser = async (userId) => {
@@ -174,10 +186,9 @@ export default {
   login,
   getThisUserRuns,
   getThisUserRunIds,
-  getUser,
   updateUser,
   updatePassword,
-  setUserPassword,
+  // setUserPassword,
   deleteUserContent,
   deleteUser,
 };

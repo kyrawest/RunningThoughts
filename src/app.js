@@ -6,20 +6,18 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import passport from "passport";
-import utils from "./utils/utils.js";
 import { router } from "./routes/router.js";
 import { notFound, errorHandler } from "./handlers/errorHandlers.js";
 import "./handlers/passport.js";
 import cors from "cors";
 import methodOverride from "method-override";
 import flash from "connect-flash";
-import favicon from "serve-favicon";
 import helmet from "helmet";
 
 // Create expresss app
 export const app = express();
 
-//Setting up helmet - commented out when testing on localhost
+//Setting up helmet - comment out when testing on localhost
 // app.use(
 //   helmet.contentSecurityPolicy({
 //     directives: {
@@ -71,6 +69,7 @@ app.use(
 app.use(cookieParser());
 app.use(morgan("dev"));
 
+// Enabling CORS for specific origins - enables render hosting
 const allowedOrigins = [
   "http://localhost:3000", // local dev
   "https://runningthoughts.onrender.com", // your deployed frontend
@@ -101,6 +100,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+//Set up req.flash messages.
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.flashMessages = {
@@ -113,13 +113,14 @@ app.use((req, res, next) => {
 // Set locals
 app.use((req, res, next) => {
   res.locals.user = req.user;
-  res.locals.u = utils;
   res.locals.path = req.path;
   next();
 });
 
 app.use("/", router);
 
+//Handle errors that do not match any route.
 app.use(notFound);
 
+// Error handler
 app.use(errorHandler);

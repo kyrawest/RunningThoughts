@@ -4,10 +4,10 @@
   <h1 class="mb-4">Account Settings</h1>
 
   <!-- Update Username -->
-  <form action="/users/<%- user._id %>" method="POST" class="mb-4">
+  <form action="/users/username/<%- user._id %>" method="POST" class="mb-4">
     <input type="hidden" name="_method" value="PUT" />
     <div class="mb-3">
-      <label for="username" class="form-label">Display Name</label>
+      <label for="username" class="form-label">Username</label>
       <input
         type="text"
         class="form-control"
@@ -21,7 +21,7 @@
   </form>
 
   <!-- Update Email -->
-  <form action="/users/<%- user._id %>" method="POST" class="mb-4">
+  <form action="/users/email/<%- user._id %>" method="POST" class="mb-4">
     <input type="hidden" name="_method" value="PUT" />
     <div class="mb-3">
       <label for="email" class="form-label">Email Address</label>
@@ -116,7 +116,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header bg-warning">
-        <h4 class="modal-title" id="deleteUserDataModalLabel">
+        <h2 class="modal-title display-6" id="deleteUserDataModalLabel">
           DELETE ALL USER DATA
         </h4>
         <button

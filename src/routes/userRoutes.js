@@ -2,9 +2,10 @@ import { Router } from "express";
 import {
   validateEmail,
   validatePassword,
+  validateNewPassword,
   validateUsername,
   validateUserId,
-} from "../validators/userValidator.js";
+} from "../validators/validators.js";
 import { catchErrors } from "../handlers/errorHandlers.js";
 import { isLoggedIn, isAuthorized } from "../auth/auth.js";
 
@@ -23,7 +24,7 @@ userRouter.post(
 );
 
 userRouter.post("/login", validateEmail, userController.login);
-userRouter.get("/logout", catchErrors(userController.logout));
+userRouter.post("/logout", isLoggedIn, catchErrors(userController.logout));
 
 //READ
 
@@ -31,9 +32,9 @@ userRouter.get(
   "/all-runs/:userId",
   isLoggedIn,
   validateUserId,
-  isAuthorized,
+  isAuthorized, //checks if req.params.userId == req.user.id
   catchErrors(userController.getThisUserRuns)
-); //get all run objects for a user
+); //get all run objects for a user. Returns JSON. not used in current frontend but may be useful for fetch request in future buildouts.
 
 userRouter.get(
   "/all-run-ids/:userId",
@@ -41,15 +42,7 @@ userRouter.get(
   validateUserId,
   isAuthorized,
   catchErrors(userController.getThisUserRunIds)
-); //get just the runIds for a user
-
-userRouter.get(
-  "/info/:userId",
-  isLoggedIn,
-  validateUserId,
-  isAuthorized,
-  catchErrors(userController.getUser)
-); //get a user info by id
+); //get just the runIds for a user. Returns JSON. not used in current frontend but may be useful for fetch request in future buildouts.
 
 //UPDATE
 
@@ -57,39 +50,42 @@ userRouter.put(
   "/update-password/:userId",
   isLoggedIn,
   isAuthorized,
+  validateNewPassword,
   catchErrors(userController.updatePassword)
 );
 
-userRouter.put(
-  "/set-password/:userId",
-  isLoggedIn,
-  isAuthorized,
-  catchErrors(userController.setPassword)
-);
-// Uses passport-local-mongoose to set a new user password passed to is in req.body as {"newPassword": "<password here>"}
+// Only comment back in for development - can be used to update passwords without knowing the old password
+// userRouter.put(
+//   "/set-password/:userId",
+//   catchErrors(userController.setPassword)
+// );
 
 userRouter.put(
-  "/:userId",
+  "/email/:userId",
   isLoggedIn,
   validateUserId,
+  validateEmail,
   isAuthorized,
-  catchErrors(userController.updateUser)
-); //update a given user
+  catchErrors(userController.updateEmail)
+); //update a given user's email
+
+userRouter.put(
+  "/username/:userId",
+  isLoggedIn,
+  validateUserId,
+  validateUsername,
+  isAuthorized,
+  catchErrors(userController.updateUsername)
+); //update a given user's username
 
 //DELETE
 
-const log = (req, res, next) => {
-  console.log("here3");
-  next();
-};
-
 userRouter.delete(
   "/delete-content/:userId",
-  log,
   isLoggedIn,
-  log,
+  isAuthorized,
   catchErrors(userController.deleteUserContent)
-); //delete runs+notes for a user
+); //delete runs+notes for a user, updates the user to reflect this
 
 userRouter.delete(
   "/:userId",
