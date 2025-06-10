@@ -13,7 +13,8 @@ const createNewRunWithNote = async (req, res, next) => {
   if (!req.body.content) {
     throw new createHttpError(
       400,
-      "Something went wrong with creating this run."
+      "Something went wrong with creating this run.",
+      { expose: true }
     );
   }
 
@@ -60,7 +61,11 @@ const getRunNotes = async (req, res) => {
 
   //Authorization check: If the note.userId is not the same as req.user, send an error message.
   if (!notes[0].userId.toString() == req.user._id.toString()) {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw new createHttpError(
+      403,
+      "You do not have permission to access this",
+      { expose: true }
+    );
   }
 
   //If there are no notes, say so.
@@ -81,7 +86,11 @@ const getRun = async (req, res) => {
 
   //Check authorization - throw an error out to catchErrors if req.user is not the owner of the run.
   if (!run.userId.toString() == req.user._id.toString()) {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw new createHttpError(
+      403,
+      "You do not have permission to access this",
+      { expose: true }
+    );
   }
 
   res.status(200).json(run);
@@ -95,7 +104,9 @@ const updateRun = async (req, res) => {
 
   //If the request has been sent with another field in the body, generate an error
   if (!req.body.title) {
-    throw new createHttpError(400, "Something went wrong updating your run.");
+    throw new createHttpError(400, "Something went wrong updating your run.", {
+      expose: true,
+    });
   }
   const title = req.body.title; // should be something like {title: "My first run"}
 

@@ -6,6 +6,12 @@ const pageRunId = runid;
 
 let currentRunId = user.current_run;
 
+const pageMic = document.querySelector(".mic-button-page");
+
+pageMic.addEventListener("click", () => {
+  pageMic.classList.toggle("d-none"); //make the page mic button disappear since we have another one embedded in the modal
+});
+
 // Client side determines a user's current run so it can decide where to put a new note.
 //If the user has a current run, it checks if the current run is older than 2 hours.
 // If it is, it sets the current run to null, so starting a new note using the mic button on the bashboard will also create a new run.
@@ -62,14 +68,17 @@ if (recognition) {
       .map((result) => result[0].transcript)
       .join("");
     if (speechEdit == "new") {
+      //for new note modal that starts with speech input
       speechDisplay.innerText = transcript;
     } else if (speechEdit == "edit") {
+      //for the edit note modal
       //this can only append to the end of a note, users will have to use native keyboard mic if they wish to edit within the text block
-      editContent = document.getElementById("edit-note-modal-content").value =
+      document.getElementById("edit-note-modal-content").value =
         startingText + " " + transcript;
     } else if (speechEdit == "newer") {
-      editContent = document.getElementById("new-note-modal-content").value =
-        startingText + " " + transcript;
+      //for new note modal that starts with no speech input
+      document.getElementById("new-note-modal-content").value =
+        startingText + ` ${transcript}`;
     }
   };
 
@@ -107,6 +116,7 @@ modal.addEventListener("shown.bs.modal", () => {
 
   // Stop speech recognition when modal is closed
   this.addEventListener("hide.bs.modal", () => {
+    pageMic.classList.toggle("d-none"); //make the page mic button disappear since we have another one embedded in the modal
     if (recognition && isRecognizing) {
       recognition.stop();
     }
@@ -216,6 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const editNoteModal = document.getElementById("editNoteModal");
 if (editNoteModal) {
   editNoteModal.addEventListener("show.bs.modal", (event) => {
+    pageMic.classList.toggle("d-none");
     // Button that triggered the modal
     const button = event.relatedTarget;
     // Extract info from data-bs-* attributes
@@ -223,18 +234,19 @@ if (editNoteModal) {
     const startingContent = document.querySelector(
       `#note-${noteId}-content`
     ).innerText;
-    startingText = startingContent.trim();
+
     // Update the modal's content.
     const modalContent = editNoteModal.querySelector(
       "#edit-note-modal-content"
     );
-    modalContent.textContent = startingContent;
+    modalContent.textContent = startingContent.trim();
 
     // Start speech-to-text when #edit-mic is pressed
     const editMic = document.querySelector(`#edit-mic`);
     editMic.addEventListener("click", async () => {
       speechEdit = "edit";
       if (recognition && !isRecognizing) {
+        startingText = modalContent.value;
         //if the browser is capable and it is not yet recognizing speech, start doing so
         recognition.start();
       }
@@ -247,6 +259,7 @@ if (editNoteModal) {
 
     // Stop speech recognition when modal is closed
     editNoteModal.addEventListener("hide.bs.modal", () => {
+      pageMic.classList.toggle("d-none"); //make the page mic appear again
       if (recognition && isRecognizing) {
         recognition.stop();
       }
@@ -265,8 +278,9 @@ if (editNoteModal) {
 const newMic = document.querySelector(`#new-mic`);
 newMic.addEventListener("click", async () => {
   speechEdit = "newer";
-  startingText = document.getElementById("new-note-modal-content").value;
+
   if (recognition && !isRecognizing) {
+    startingText = document.getElementById("new-note-modal-content").value;
     //if the browser is capable and it is not yet recognizing speech, start doing so
     recognition.start();
   }
@@ -278,7 +292,13 @@ newMic.addEventListener("click", async () => {
 });
 
 // Stop speech recognition when modal is closed
+newNoteModal.addEventListener("show.bs.modal", () => {
+  pageMic.classList.toggle("d-none");
+});
+
+// Stop speech recognition when modal is closed
 newNoteModal.addEventListener("hide.bs.modal", () => {
+  pageMic.classList.toggle("d-none"); //make the page mic button disappear since we have another one embedded in the modal
   if (recognition && isRecognizing) {
     recognition.stop();
   }

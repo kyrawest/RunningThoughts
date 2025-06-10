@@ -29,10 +29,12 @@ const register = async (email, password, username) => {
     await User.register(user, password);
   } catch (err) {
     if (err.name === "MissingPasswordError") {
-      throw createHttpError(400, "Password must exist");
+      throw createHttpError(400, "Password must exist", { expose: true });
     }
     if (err.name === "UserExistsError") {
-      throw createHttpError(409, "User with this email already exists");
+      throw createHttpError(409, "User with this email already exists", {
+        expose: true,
+      });
     }
     // Catch any errors not described here
     throw err;
@@ -48,7 +50,8 @@ const login = async (email, password) => {
   if (!authentication.user || authentication.error) {
     throw createHttpError(
       401,
-      `Login failed: ${authentication.error?.message}` || "Login failed."
+      `Login failed: ${authentication.error?.message}` || "Login failed.",
+      { expose: false }
     );
   }
   return authentication;
@@ -89,13 +92,15 @@ const updatePassword = async (
   if (newPassword !== confirmPassword) {
     throw createHttpError(
       400,
-      "New password does not match confirmed password."
+      "New password does not match confirmed password.",
+      { expose: true }
     );
   }
   if (newPassword == currentPassword) {
     throw createHttpError(
       400,
-      "New password cannot be the same as your current password"
+      "New password cannot be the same as your current password",
+      { expose: true }
     );
   }
 
@@ -118,7 +123,8 @@ const updateUser = async (userId, keyValue) => {
     if (err.code == 11000) {
       throw new createHttpError(
         409,
-        "An account with this email already exists."
+        "An account with this email already exists.",
+        { expose: true }
       );
     }
     throw err;

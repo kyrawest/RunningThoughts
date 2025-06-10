@@ -21,7 +21,9 @@ const register = async (req, res) => {
   const { email, username, password, confirmPassword } = req.body;
 
   if (password !== confirmPassword) {
-    throw new createHttpError(400, "Your passwords do not match.");
+    throw new createHttpError(400, "Your passwords do not match.", {
+      expose: true,
+    });
   }
 
   await userHandler.register(email, password, username); //will return a registered user
@@ -35,7 +37,9 @@ const login = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    return next(createHttpError(400, { message: errors.array() }));
+    return next(
+      createHttpError(400, { message: errors.array() }, { expose: true })
+    ); //these express validatione errors are safe to show
   }
 
   const { email, password } = req.body;
@@ -101,7 +105,8 @@ const updatePassword = async (req, res) => {
   ) {
     throw new createHttpError(
       400,
-      "Something went wrong with updating your password."
+      "Something went wrong with updating your password.",
+      { expose: true }
     );
   }
 
@@ -136,7 +141,8 @@ const updateEmail = async (req, res) => {
   if (!req.body.email) {
     throw new createHttpError(
       400,
-      "Something went wrong with updating your email."
+      "Something went wrong with updating your email.",
+      { expose: true }
     );
   }
 
@@ -168,7 +174,8 @@ const updateUsername = async (req, res) => {
   if (!req.body.username) {
     throw new createHttpError(
       400,
-      "Something went wrong with updating your name."
+      "Something went wrong with updating your name.",
+      { expose: true }
     );
   }
 

@@ -41,10 +41,18 @@ export const errorHandler = (err, req, res, next) => {
       .send("Something went wrong. Please try again later.");
   }
 
+  //with create-http-errors that we have set up ourselves, we can indicate if the error message should be exposed to the user with err.expose == true.
+  // Errors thrown without createHttpError or that have been set to expose: false will not show the error message to the user.
+  if (!err.expose) {
+    err.message = "Sorry, we got tripped up. Something went wrong.";
+  }
+
   // Allow multiple error messages
 
   if (Array.isArray(err.message)) {
-    err.message.forEach((msg) => req.flash("error", msg));
+    err.message.forEach((msg) => {
+      req.flash("error", msg);
+    });
   } else {
     req.flash(
       "error",
@@ -53,7 +61,7 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   // Redirect to a safe fallback
-  //Save the session to preserve flash messages in case something goes wrong during redirect
+  // Save the session to preserve flash messages in case something goes wrong during redirect
   req.session.save((saveErr) => {
     if (saveErr) {
       console.error("Error saving session before redirect:", saveErr);

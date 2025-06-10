@@ -18,7 +18,8 @@ const createNewNote = async (content, userId, runId) => {
     allowedTags: [],
     allowedAttributes: {},
   });
-  content = content.trim().charAt(0).toUpperCase() + content.slice(1);
+  content = content.trim();
+  content = content[0].toUpperCase() + content.slice(1);
 
   //Start transaction
   const session = await mongoose.startSession();
@@ -35,14 +36,17 @@ const createNewNote = async (content, userId, runId) => {
     if (!run) {
       throw new createHttpError(
         404,
-        "Cannot add a note to a run that does not exist. Try creating a new run and trying again!"
+        "Cannot add a note to a run that does not exist. Try creating a new run and trying again!",
+        { expose: true }
       );
     }
 
     //If the userId for the run does not match the userId passed to this function from req.user,
     // throw an error. Users may not add notes to runs that are not theirs.
     if (run.userId.toString() !== userId) {
-      throw new createHttpError(403, "You do not have permission for this.");
+      throw new createHttpError(403, "You do not have permission for this.", {
+        expose: true,
+      });
     }
 
     //Create the note. Using .save instead of .create for support of sessions.
@@ -96,7 +100,8 @@ const toggleOpen = async (noteId, loggedUserId) => {
     if (userId !== loggedUserId) {
       throw new createHttpError(
         403,
-        "You do not have permission to access this"
+        "You do not have permission to access this",
+        { expose: true }
       );
     }
 
@@ -137,7 +142,10 @@ const updateNote = async (noteId, content, loggedUserId) => {
   //Throw 403 error if req.user id does not math the userId stored in the note.
   //We check this before committing any changes to the note.
   if (loggedUserId !== userId) {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw (
+      (new createHttpError(403, "You do not have permission to access this"),
+      { expose: true })
+    );
   }
 
   //Sanitize content
@@ -173,7 +181,8 @@ const deleteNote = async (noteId, loggedUserId) => {
     if (loggedUserId !== userId.toString()) {
       throw new createHttpError(
         403,
-        "You do not have permission to access this"
+        "You do not have permission to access this",
+        { expose: true }
       );
     }
 

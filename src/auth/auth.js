@@ -43,6 +43,10 @@ export const isAuthorized = (req, res, next) => {
   if (req.user._id.toString() == req.params.userId) {
     return next();
   } else {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw new createHttpError(
+      403,
+      "You do not have permission to access this",
+      { expose: true }
+    );
   }
 };

@@ -23,6 +23,10 @@ main {
   flex: 1;
 }
 
+.display-7 {
+  font-size: 2rem;
+}
+
 /* sizing constaints for brand logo in top left of top nav bar */
 .nav-image {
   width: 50px;
@@ -32,12 +36,27 @@ main {
 }
 
 /* Mic button that overlays most views */
+.mic-button-page {
+  width: 35vw;
+  max-width: 200px;
+  height: 35vw;
+  max-height: 200px;
+
+  /* stick to the bottom right of the page */
+  position: sticky;
+  bottom: 10px;
+  align-self: flex-end;
+  z-index: 1000;
+  font-size: clamp(5rem, 20vw, 8rem);
+  filter: drop-shadow(4px 5px 7px #000000);
+}
+
 .mic-button {
   width: 35vw;
   max-width: 200px;
   height: 35vw;
   max-height: 200px;
-  position: fixed;
+
   /* stick to the bottom right of the page */
   position: fixed;
   bottom: 10px;
@@ -70,6 +89,7 @@ main {
   font-style: normal;
 }
 
+/* larger logo that displays when you don't have any notes/runs */
 #shrug-cere {
   max-height: 300px;
 }

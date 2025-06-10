@@ -113,7 +113,8 @@ const createNewRun = async ({ userId, title = "" }) => {
 
 const getRunNotes = async (runId) => {
   //FUNCTION: returns an array of all the notes associated with a given run
-  return await Note.find({ runId }).lean();
+  // Notes created last are presented first
+  return await Note.find({ runId }).sort({ createdAt: -1 }).lean();
 };
 
 const getRun = async (runId) => {
@@ -131,7 +132,9 @@ const updateRun = async (runId, title, loggedUserId) => {
   const userId = run.userId.toString();
 
   if (loggedUserId !== userId) {
-    throw new createHttpError(403, "You do not have permission for this.");
+    throw new createHttpError(403, "You do not have permission for this.", {
+      expose: true,
+    });
   }
 
   //Sanitize user inputted title
@@ -194,7 +197,11 @@ const deleteRun = async (runId, loggedUserId) => {
   console.log("handler userId:", userId, loggedUserId);
 
   if (loggedUserId !== userId) {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw new createHttpError(
+      403,
+      "You do not have permission to access this",
+      { expose: true }
+    );
   }
 
   //Start mongoose transaction since we are altering multiple documents.

@@ -62,11 +62,7 @@ export const validateUserId = (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(userId?.trim?.())) {
     //trims whitespace from userId if needed
-    console.log("Error: invalid userId in url.");
-    throw createHttpError(
-      404,
-      "Looks like we took a wrong turn, we can't find what you're looking for."
-    );
+    throw createHttpError(404, "Invalid userId", { expose: false });
   }
 
   next();
@@ -79,11 +75,7 @@ export const validateRunId = (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(runId?.trim?.())) {
     //trims whitespace from runId if needed
-    console.log("Error: invalid runId in url.");
-    throw createHttpError(
-      404,
-      "Looks like we took a wrong turn, we can't find what you're looking for."
-    );
+    throw createHttpError(404, "Invalid runId", { expose: false });
   }
 
   next();
@@ -96,11 +88,7 @@ export const validateNoteId = (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(noteId?.trim?.())) {
     //trims whitespace from noteId if needed
-    console.log("Error: invalid noteId in url.");
-    throw createHttpError(
-      404,
-      "Looks like we took a wrong turn, we can't find what you're looking for."
-    );
+    throw createHttpError(404, "Invalid noteId", { expose: false });
   }
 
   next();

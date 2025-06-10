@@ -24,7 +24,11 @@ const getNote = async (req, res) => {
 
   //Check if the noteId belongs to the authenticated user. Throw an error if not.
   if (!note.userId.toString() == req.user._id.toString()) {
-    throw new createHttpError(403, "You do not have permission to access this");
+    throw new createHttpError(
+      403,
+      "You do not have permission to access this",
+      { expose: true }
+    );
   }
 
   res.status(200).json(note);
@@ -56,7 +60,8 @@ const updateNote = async (req, res) => {
   if (!req.body.content) {
     throw new createHttpError(
       400,
-      "Something went wrong with updating this note."
+      "Something went wrong with updating this note.",
+      { expose: true }
     );
   }
 

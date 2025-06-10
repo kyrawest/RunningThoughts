@@ -55,7 +55,8 @@ const runPage = async (req, res) => {
   if (run.userId.toString() !== user.id.toString()) {
     throw new createHttpError(
       403,
-      "You do not have permission to access this."
+      "You do not have permission to access this.",
+      { expose: true }
     );
   }
 
