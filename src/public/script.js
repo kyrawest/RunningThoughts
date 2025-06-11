@@ -32,13 +32,6 @@ if (currentRunTime !== null) {
   }
 }
 
-//TOGGLE OPEN VIEW
-//
-// Only show notes that are open
-
-const toggleOpenView = document.querySelector("#toggleOpenView");
-const toggleAllView = document.querySelector("#toggleAllView");
-
 //Speech Recognition
 //
 //
@@ -123,24 +116,38 @@ modal.addEventListener("shown.bs.modal", () => {
   });
 });
 
+//TOGGLE OPEN VIEW
+//
+// Only show notes that are open
+
+const toggleOpenView = document.querySelector("#toggleOpenView");
+const toggleAllView = document.querySelector("#toggleAllView");
+
 // TOGGLING OPEN STATE ON NOTE CARDS
 //
 //
 
+let viewState = "all"; // Default view state
+
 toggleOpenView.addEventListener("click", () => {
   const closedNotesAndRuns = document.querySelectorAll(".closed-note");
+  viewState = "openOnly"; // Set view state to open
+  toggleAllView.disabled = false;
+  toggleOpenView.disabled = true;
 
   closedNotesAndRuns.forEach((note) => {
-    note.classList.toggle("d-none");
+    note.classList.add("d-none");
   });
 });
 
 toggleAllView.addEventListener("click", () => {
-  console.log("click");
   const closedNotesAndRuns = document.querySelectorAll(".closed-note");
+  viewState = "all"; // Set view state to all
+  toggleAllView.disabled = true;
+  toggleOpenView.disabled = false;
 
   closedNotesAndRuns.forEach((note) => {
-    note.classList.toggle("d-none");
+    note.classList.remove("d-none");
   });
 });
 
@@ -177,6 +184,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (noteCard) {
         noteCard.classList.toggle("closed-note");
+        if (viewState === "openOnly") {
+          // If the view state is open only, hide the note card if it's closed
+          if (noteCard.classList.contains("closed-note")) {
+            noteCard.classList.add("d-none");
+          } else {
+            noteCard.classList.remove("d-none");
+          }
+        }
       }
       if (runCard.dataset.opennotes == 0) {
         runCard.classList.toggle("closed-note");
