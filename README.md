@@ -198,4 +198,29 @@ flowchart TD
 
 ---
 
+## Screen recordings and Demos:
+
+## Screenshots and Demos:
+
+
+<table>
+  <tr>
+    <td align="center"><strong>Toggling open/closed state</strong><br>
+      <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExMjdhNGpqZTYwajVrcDIyMzgyNWRhM2k3OXo3emZlcHQ0MG15bDNhaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tbcPKIj7QR4lC9fgLJ/giphy.gif" 
+           alt="GIF showing a checkbox being toggled to open or close a note" 
+           width="300">
+    </td>
+    <td align="center"><strong>Editing run title</strong><br>
+      <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmZlZW5qMjBjNmZuN255cDB1ZmdibmNnZ25obXA5ZGNlejB3Ynd4cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Sf8XpNuGSksAvp6nRB/giphy.gif" 
+           alt="GIF showing a user navigating to a run page and updating the title" 
+           width="300">
+    </td>
+    <td align="center"><strong>Speech-to-text note creation</strong><br>
+      <img src="https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExa3ZhNDk0b3Z6MHV3OTZoNGN1b203Mmt6eGxyaTlkOG02ZzR5eTFsciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/SDNJOf2OdliaIsVJnC/giphy.gif" 
+           alt="GIF showing a note being created using speech-to-text input" 
+           width="300">
+    </td>
+  </tr>
+</table>
+
 
