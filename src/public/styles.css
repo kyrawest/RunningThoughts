@@ -25,7 +25,7 @@ main {
 
 /* used for note card content and some buttons */
 .display-7 {
-  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
 }
 
 /* sizing constaints for brand logo in top left of top nav bar */
