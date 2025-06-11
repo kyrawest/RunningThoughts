@@ -12,20 +12,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "array-sort": "^1.0.0",
     "bootstrap": "^5.3.6",
     "bootswatch": "^5.3.6",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
-    "github-slugger": "^2.0.0",
     "helmet": "^8.1.0",
     "http-errors": "^2.0.0",
     "method-override": "^3.0.0",
@@ -33,8 +30,7 @@
     "morgan": "^1.10.0",
     "passport": "^0.7.0",
     "passport-local-mongoose": "^8.0.0",
-    "sanitize-html": "^2.17.0",
-    "serve-favicon": "^2.5.0"
+    "sanitize-html": "^2.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.10"
