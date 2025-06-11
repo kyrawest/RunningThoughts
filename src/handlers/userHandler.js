@@ -51,7 +51,7 @@ const login = async (email, password) => {
     throw createHttpError(
       401,
       `Login failed: ${authentication.error?.message}` || "Login failed.",
-      { expose: false }
+      { expose: true }
     );
   }
   return authentication;

@@ -18,24 +18,24 @@ import helmet from "helmet";
 export const app = express();
 
 //Setting up helmet - comment out when testing on localhost
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       defaultSrc: ["'self'"],
-//       scriptSrc: ["'self'", "https://kit.fontawesome.com"],
-//       styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-//       fontSrc: [
-//         "'self'",
-//         "https://fonts.gstatic.com",
-//         "https://ka-f.fontawesome.com",
-//       ],
-//       imgSrc: ["'self'", "data:"],
-//       objectSrc: ["'none'"],
-//       connectSrc: ["'self'", "https://ka-f.fontawesome.com"],
-//       upgradeInsecureRequests: [],
-//     },
-//   })
-// );
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://kit.fontawesome.com"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://ka-f.fontawesome.com",
+      ],
+      imgSrc: ["'self'", "data:"],
+      objectSrc: ["'none'"],
+      connectSrc: ["'self'", "https://ka-f.fontawesome.com"],
+      upgradeInsecureRequests: [],
+    },
+  })
+);
 
 // View engine setup
 app.set("view engine", "ejs");
