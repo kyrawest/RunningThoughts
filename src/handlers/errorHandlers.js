@@ -41,6 +41,24 @@ export const errorHandler = (err, req, res, next) => {
       .send("Something went wrong. Please try again later.");
   }
 
+  // Detect Expo Go or mobile device by User-Agent
+  const userAgent = req.get("User-Agent") || "";
+  const isMobileExpo =
+    userAgent.includes("Expo") ||
+    userAgent.includes("okhttp") || // common in React Native fetch
+    userAgent.includes("Mobile");
+
+  if (isMobileExpo) {
+    // Send JSON error for mobile clients
+    return res.status(status).json({
+      error: err.expose
+        ? err.message
+        : "Sorry, we got tripped up. Something went wrong.",
+      status,
+    });
+  }
+
+  //Web frontend:
   //with create-http-errors that we have set up ourselves, we can indicate if the error message should be exposed to the user with err.expose == true.
   // Errors thrown without createHttpError or that have been set to expose: false will not show the error message to the user.
   if (!err.expose) {
