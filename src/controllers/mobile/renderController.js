@@ -26,7 +26,8 @@ const dashboard = async (req, res) => {
   );
 
   // Render the page with our gathered data.
-  return runs;
+  console.log("Rendering mobile dashboard for user:", username, "Runs", runs);
+  res.status(200).json(runs);
 };
 
 export default {
