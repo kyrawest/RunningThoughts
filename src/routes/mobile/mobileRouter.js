@@ -3,6 +3,7 @@ import { Router } from "express";
 import userRouter from "./userRoutes.js";
 import runRouter from "./runRoutes.js";
 import noteRouter from "./noteRoutes.js";
+import passport from "passport";
 
 import renderController from "../../controllers/mobile/renderController.js";
 
@@ -17,7 +18,7 @@ mobileRouter.use("/runs", runRouter); // all run-related endpoints
 mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
-  verifyJWT,
+  passport.authenticate("jwt", { session: false }),
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
 
