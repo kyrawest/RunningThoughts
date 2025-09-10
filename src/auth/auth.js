@@ -50,3 +50,44 @@ export const isAuthorized = (req, res, next) => {
     );
   }
 };
+
+//For mobile auth with passport:
+export function signAccessToken(user) {
+  return jwt.sign(
+    { sub: user._id, email: user.username },
+    process.env.JWT_SECRET,
+    { expiresIn: "15m" }
+  );
+}
+
+export function signRefreshToken(user) {
+  return jwt.sign({ sub: user._id }, process.env.JWT_REFRESH_SECRET, {
+    expiresIn: "7d",
+  });
+}
+
+export const verifyJWT = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    return res.status(401).json({ message: "Missing Authorization header" });
+  }
+
+  const token = authHeader.split(" ")[1]; // Expect "Bearer <token>"
+
+  if (!token) {
+    return res.status(401).json({ message: "Missing token" });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = {
+      _id: payload.sub,
+      email: payload.email,
+      username: payload.username,
+    };
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: "Invalid or expired token" });
+  }
+};

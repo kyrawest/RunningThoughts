@@ -73,6 +73,7 @@ app.use(morgan("dev"));
 const allowedOrigins = [
   "http://localhost:3000", // local dev
   "https://runningthoughts.onrender.com", // your deployed frontend
+  "exp://10.0.0.74:8081", // expo app on local network
 ];
 
 app.use(

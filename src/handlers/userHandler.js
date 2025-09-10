@@ -6,6 +6,13 @@ import sanitizeHtml from "sanitize-html";
 import mongoose from "mongoose";
 import createHttpError from "http-errors";
 
+//for mobile auth
+import jwt from "jsonwebtoken";
+
+// Secret key for JWT (store securely in .env)
+const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
+const JWT_EXPIRES_IN = "7d";
+
 //CREATE
 
 const register = async (email, password, username) => {
@@ -43,6 +50,8 @@ const register = async (email, password, username) => {
 
 const login = async (email, password) => {
   // Login a user with passport
+  console.log("Logging in user:", email);
+
   const authentication = await User.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true,
@@ -55,6 +64,33 @@ const login = async (email, password) => {
     );
   }
   return authentication;
+};
+
+export const mobileLogin = async (email, password) => {
+  // Passport-local-mongoose provides the authenticate method
+  return new Promise((resolve, reject) => {
+    User.authenticate()(email, password, (err, user, passwordError) => {
+      if (err) return reject(err);
+      if (passwordError || !user) {
+        return reject(
+          createHttpError(401, "Invalid email or password.", { expose: true })
+        );
+      }
+
+      // User authenticated successfully -> generate JWT
+      const payload = {
+        id: user._id,
+        email: user.email,
+        username: user.username,
+      };
+
+      const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: JWT_EXPIRES_IN,
+      });
+
+      resolve({ user: payload, token });
+    });
+  });
 };
 
 //READ
@@ -190,6 +226,7 @@ const deleteUser = async (userId) => {
 export default {
   register,
   login,
+  mobileLogin,
   getThisUserRuns,
   getThisUserRunIds,
   updateUser,
