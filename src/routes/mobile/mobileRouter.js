@@ -6,7 +6,7 @@ import noteRouter from "./noteRoutes.js";
 
 import renderController from "../../controllers/mobile/renderController.js";
 
-import { isLoggedIn } from "../../auth/auth.js";
+import { isLoggedIn, verifyJWT } from "../../auth/auth.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
 
 const mobileRouter = Router();
@@ -17,7 +17,7 @@ mobileRouter.use("/runs", runRouter); // all run-related endpoints
 mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
-  passport.authenticate("jwt", { session: false }),
+  verifyJWT,
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
 
