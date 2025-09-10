@@ -3,7 +3,7 @@ import { validateRunId } from "../../validators/validators.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
 import { verifyJWT } from "../../auth/auth.js";
 
-import runController from "../../controllers/runController.js";
+import runController from "../../controllers/mobile/runController.js";
 
 const runRouter = Router();
 

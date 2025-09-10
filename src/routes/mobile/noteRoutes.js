@@ -3,7 +3,7 @@ import { validateNoteId } from "../../validators/validators.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
 import { isLoggedIn, isAuthorized } from "../../auth/auth.js";
 
-import noteController from "../../controllers/noteController.js";
+import noteController from "../../controllers/mobile/noteController.js";
 
 const noteRouter = Router();
 

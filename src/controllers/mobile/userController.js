@@ -1,4 +1,4 @@
-import userHandler from "../handlers/userHandler.js";
+import userHandler from "../../handlers/userHandler.js";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 

@@ -9,7 +9,7 @@ import {
 import { catchErrors } from "../../handlers/errorHandlers.js";
 import { verifyJWT, isAuthorized } from "../../auth/auth.js"; // JWT middleware
 
-import userController from "../../controllers/userController.js";
+import userController from "../../controllers/mobile/userController.js";
 
 const userRouter = Router();
 

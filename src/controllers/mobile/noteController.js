@@ -1,4 +1,4 @@
-import noteHandler from "../handlers/noteHandler.js";
+import noteHandler from "../../handlers/noteHandler.js";
 import createHttpError from "http-errors";
 
 //CREATE
