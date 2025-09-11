@@ -3,7 +3,7 @@ import { Router } from "express";
 import userRouter from "./userRoutes.js";
 import runRouter from "./runRoutes.js";
 import noteRouter from "./noteRoutes.js";
-import passport from "passport";
+import passport from "../../handlers/passport.js";
 
 import renderController from "../../controllers/mobile/renderController.js";
 
@@ -19,6 +19,10 @@ mobileRouter.use("/runs", runRouter); // all run-related endpoints
 mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
+  (req, res, next) => {
+    console.log("Auth header:", req.headers.authorization);
+    next();
+  },
   (req, res, next) => {
     console.log("Mobile dashboard access attempt...");
     passport.authenticate("jwt", { session: false }, (err, user, info) => {

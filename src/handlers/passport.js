@@ -20,9 +20,10 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET, // add JWT_SECRET to your .env
     },
     async (payload, done) => {
+      console.log("Decoded JWT payload:", payload);
       try {
-        // payload.sub will be the user ID we put in the token
-        const user = await User.findById(payload.sub);
+        // payload.id will be the user ID we put in the token
+        const user = await User.findById(payload.id);
         if (user) return done(null, user);
         return done(null, false);
       } catch (err) {
@@ -31,3 +32,5 @@ passport.use(
     }
   )
 );
+
+export default passport;
