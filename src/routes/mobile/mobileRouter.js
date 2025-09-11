@@ -18,7 +18,17 @@ mobileRouter.use("/runs", runRouter); // all run-related endpoints
 mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
-  passport.authenticate("jwt", { session: false, failureMessage: true }),
+  (req, res, next) => {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        // Force it through your error handler as JSON
+        return next(createHttpError(401, "Unauthorized", { expose: true }));
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
 
