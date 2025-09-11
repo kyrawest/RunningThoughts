@@ -18,7 +18,7 @@ mobileRouter.use("/runs", runRouter); // all run-related endpoints
 mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
-  passport.authenticate("jwt", { session: false }),
+  passport.authenticate("jwt", { session: false, failureMessage: true }),
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
 
