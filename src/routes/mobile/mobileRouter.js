@@ -9,6 +9,7 @@ import renderController from "../../controllers/mobile/renderController.js";
 
 import { isLoggedIn, verifyJWT } from "../../auth/auth.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
+import createHttpError from "http-errors";
 
 const mobileRouter = Router();
 
@@ -19,6 +20,7 @@ mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
   (req, res, next) => {
+    console.log("Mobile dashboard access attempt...");
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       if (err) return next(err);
       if (!user) {
