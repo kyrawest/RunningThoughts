@@ -20,11 +20,6 @@ mobileRouter.use("/notes", noteRouter); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
   (req, res, next) => {
-    console.log("Auth header:", req.headers.authorization);
-    next();
-  },
-  (req, res, next) => {
-    console.log("Mobile dashboard access attempt...");
     passport.authenticate("jwt", { session: false }, (err, user, info) => {
       if (err) return next(err);
       if (!user) {

@@ -2,6 +2,8 @@ import { Router } from "express";
 import { validateRunId } from "../../validators/validators.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
 import { verifyJWT } from "../../auth/auth.js";
+import passport from "../../handlers/passport.js";
+import createHttpError from "http-errors";
 
 import runController from "../../controllers/mobile/runController.js";
 
@@ -28,7 +30,17 @@ runRouter.post("/", verifyJWT, catchErrors(runController.createNewRun));
 // Get all notes for a given run
 runRouter.get(
   "/notes/:runId",
-  verifyJWT,
+  (req, res, next) => {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        // Force it through your error handler as JSON
+        return next(createHttpError(401, "Unauthorized", { expose: true }));
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   catchErrors(validateRunId),
   catchErrors(runController.getRunNotes)
 );
@@ -36,7 +48,17 @@ runRouter.get(
 // Get a given run in JSON format
 runRouter.get(
   "/:runId",
-  verifyJWT,
+  (req, res, next) => {
+    passport.authenticate("jwt", { session: false }, (err, user, info) => {
+      if (err) return next(err);
+      if (!user) {
+        // Force it through your error handler as JSON
+        return next(createHttpError(401, "Unauthorized", { expose: true }));
+      }
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
   catchErrors(validateRunId),
   catchErrors(runController.getRun)
 );
