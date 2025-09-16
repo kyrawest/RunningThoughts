@@ -67,28 +67,37 @@ export function signRefreshToken(user) {
 }
 
 export const verifyJWT = (req, res, next) => {
-  console.log("Verifying JWT...", req.headers);
-  const authHeader = req.headers["authorization"];
-
-  if (!authHeader) {
-    return res.status(401).json({ message: "Missing Authorization header" });
-  }
-
-  const token = authHeader.split(" ")[1]; // Expect "Bearer <token>"
-
-  if (!token) {
-    return res.status(401).json({ message: "Missing token" });
-  }
-
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = {
-      _id: payload.sub,
-      email: payload.email,
-      username: payload.username,
-    };
+  passport.authenticate("jwt", { session: false }, (err, user, info) => {
+    if (err) return next(err);
+    if (!user) {
+      // Force it through your error handler as JSON
+      return next(createHttpError(401, "Unauthorized", { expose: true }));
+    }
+    req.user = user;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
+  });
+  // console.log("Verifying JWT...", req.headers);
+  // const authHeader = req.headers["authorization"];
+
+  // if (!authHeader) {
+  //   return res.status(401).json({ message: "Missing Authorization header" });
+  // }
+
+  // const token = authHeader.split(" ")[1]; // Expect "Bearer <token>"
+
+  // if (!token) {
+  //   return res.status(401).json({ message: "Missing token" });
+  // }
+
+  // try {
+  //   const payload = jwt.verify(token, process.env.JWT_SECRET);
+  //   req.user = {
+  //     _id: payload.sub,
+  //     email: payload.email,
+  //     username: payload.username,
+  //   };
+  //   next();
+  // } catch (err) {
+  //   return res.status(401).json({ message: "Invalid or expired token" });
+  // }
 };
