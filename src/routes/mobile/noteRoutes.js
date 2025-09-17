@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validateNoteId } from "../../validators/validators.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
-import { verifyJWT, isAuthorized, verifyJWT } from "../../auth/auth.js";
+import { verifyJWT, isAuthorized } from "../../auth/auth.js";
 
 import noteController from "../../controllers/mobile/noteController.js";
 
