@@ -82,6 +82,11 @@ export const mobileLogin = async (email, password) => {
         id: user._id,
         email: user.email,
         username: user.username,
+        current_run: user.current_run,
+        currentRunUpdatedAt: user.currentRunUpdatedAt,
+        tot_notes: user.tot_notes,
+        tot_open_notes: user.tot_open_notes,
+        tot_runs: user.tot_runs,
       };
 
       const token = jwt.sign(payload, JWT_SECRET, {
