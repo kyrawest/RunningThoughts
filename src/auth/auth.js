@@ -76,7 +76,7 @@ export const verifyJWT = (req, res, next) => {
     }
     req.user = user;
     next();
-  });
+  })(req, res, next);
   // console.log("Verifying JWT...", req.headers);
   // const authHeader = req.headers["authorization"];
 
