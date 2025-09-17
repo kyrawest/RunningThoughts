@@ -41,14 +41,18 @@ export const errorHandler = (err, req, res, next) => {
       .send("Something went wrong. Please try again later.");
   }
 
-  // Detect Expo Go or mobile device by User-Agent
+  // Detect mobile API requests by URL path or User-Agent
   const userAgent = req.get("User-Agent") || "";
-  const isMobileExpo =
+  const isMobileAPI =
+    req.path.startsWith("/mobile/") ||
     userAgent.includes("Expo") ||
     userAgent.includes("okhttp") || // common in React Native fetch
-    userAgent.includes("Mobile");
+    userAgent.includes("Mobile") ||
+    userAgent.includes("iPhone") ||
+    userAgent.includes("iPad") ||
+    userAgent.includes("Android");
 
-  if (isMobileExpo) {
+  if (isMobileAPI) {
     // Send JSON error for mobile clients
     return res.status(status).json({
       error: err.expose
