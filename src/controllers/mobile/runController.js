@@ -5,7 +5,7 @@ import createHttpError from "http-errors";
 //CREATE
 
 const createNewRunWithNote = async (req, res, next) => {
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
   if (!req.body.content) {
     throw new createHttpError(400, "Missing content for this run.", {
@@ -27,7 +27,7 @@ const createNewRunWithNote = async (req, res, next) => {
 };
 
 const createNewRun = async (req, res, next) => {
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
   const payload = { userId };
 
   if (req.body.title) payload.title = req.body.title;

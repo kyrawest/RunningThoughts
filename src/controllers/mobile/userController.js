@@ -73,7 +73,7 @@ const getThisUserRunIds = async (req, res, next) => {
 
 const updatePassword = async (req, res, next) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
   if (!currentPassword || !newPassword || !confirmPassword) {
     throw new createHttpError(400, "Missing fields for password update.", {
@@ -107,7 +107,7 @@ const updatePassword = async (req, res, next) => {
 
 const updateEmail = async (req, res, next) => {
   const { email } = req.body;
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
   if (!email) {
     throw new createHttpError(400, "Missing email.", { expose: true });
@@ -128,7 +128,7 @@ const updateEmail = async (req, res, next) => {
 
 const updateUsername = async (req, res, next) => {
   const { username } = req.body;
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
   if (!username) {
     throw new createHttpError(400, "Missing username.", { expose: true });
@@ -150,7 +150,7 @@ const updateUsername = async (req, res, next) => {
 //DELETE
 
 const deleteUserContent = async (req, res, next) => {
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
   try {
     await userHandler.deleteUserContent(userId);

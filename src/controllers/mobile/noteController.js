@@ -3,17 +3,9 @@ import createHttpError from "http-errors";
 
 //CREATE
 const createNewNote = async (req, res, next) => {
-  console.log(`📝 Mobile note creation - at handler level`);
-
   const { content } = req.body;
   const userId = req.user._id.toString(); // from JWT
   const runId = req.params.runId;
-
-  console.log(
-    `📝 Mobile note creation - User: ${userId}, Run: ${runId}, Content length: ${
-      content?.length || 0
-    }`
-  );
 
   if (!content) {
     throw new createHttpError(400, "Missing content for new note.", {

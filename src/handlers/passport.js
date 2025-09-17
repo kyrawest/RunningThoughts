@@ -20,7 +20,6 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET, // add JWT_SECRET to your .env
     },
     async (payload, done) => {
-      console.log("Decoded JWT payload:", payload);
       try {
         // payload.id will be the user ID we put in the token
         const user = await User.findById(payload.id);
