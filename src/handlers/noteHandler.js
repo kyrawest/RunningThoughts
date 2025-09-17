@@ -13,6 +13,8 @@ const createNewNote = async (content, userId, runId) => {
   //We also authenticate that the given run belongs to this user in this session.
   //If any document updates fail, abort all updates
 
+  console.log(`📝 Handler: Creating note for user ${userId} in run ${runId}`);
+
   //Sanitize content
   content = sanitizeHtml(content, {
     allowedTags: [],

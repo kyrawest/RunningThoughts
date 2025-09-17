@@ -16,7 +16,14 @@ const mobileRouter = Router();
 // Prefix each module router for clarity in the mobile API
 mobileRouter.use("/users", userRouter); // all user-related endpoints
 mobileRouter.use("/runs", runRouter); // all run-related endpoints
-mobileRouter.use("/notes", noteRouter); // all note-related endpoints
+mobileRouter.use(
+  "/notes",
+  (req, res, next) => {
+    console.log(`📝 Notes router reached: ${req.method} ${req.path}`);
+    next();
+  },
+  noteRouter
+); // all note-related endpoints
 mobileRouter.use(
   "/dashboard",
   (req, res, next) => {

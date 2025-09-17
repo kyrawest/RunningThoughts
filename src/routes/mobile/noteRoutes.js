@@ -12,6 +12,10 @@ const noteRouter = Router();
 // Create a new note associated with a given runId
 noteRouter.post(
   "/:runId",
+  (req, res, next) => {
+    console.log(`📝 POST /notes/${req.params.runId} - Creating new note`);
+    next();
+  },
   isLoggedIn,
   catchErrors(noteController.createNewNote)
 );

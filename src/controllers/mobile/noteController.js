@@ -7,7 +7,11 @@ const createNewNote = async (req, res, next) => {
   const userId = req.user._id; // from JWT
   const runId = req.params.runId;
 
-  console.log("new note posted from mobile");
+  console.log(
+    `📝 Mobile note creation - User: ${userId}, Run: ${runId}, Content length: ${
+      content?.length || 0
+    }`
+  );
 
   if (!content) {
     throw new createHttpError(400, "Missing content for new note.", {
