@@ -1,4 +1,5 @@
 import createHttpError from "http-errors";
+import passport from "../handlers/passport.js";
 
 export const isLoggedIn = (req, res, next) => {
   // Middleware to check if the user is logged in
