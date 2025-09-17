@@ -17,6 +17,10 @@ noteRouter.post(
     next();
   },
   verifyJWT,
+  (req, res, next) => {
+    console.log(`📝 POST /notes/${req.params.runId} - Verified JWT`);
+    next();
+  },
   catchErrors(noteController.createNewNote)
 );
 

@@ -3,6 +3,8 @@ import createHttpError from "http-errors";
 
 //CREATE
 const createNewNote = async (req, res, next) => {
+  console.log(`📝 Mobile note creation - at handler level`);
+
   const { content } = req.body;
   const userId = req.user._id; // from JWT
   const runId = req.params.runId;
