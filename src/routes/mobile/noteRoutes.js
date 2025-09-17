@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validateNoteId } from "../../validators/validators.js";
 import { catchErrors } from "../../handlers/errorHandlers.js";
-import { isLoggedIn, isAuthorized } from "../../auth/auth.js";
+import { isLoggedIn, isAuthorized, verifyJWT } from "../../auth/auth.js";
 
 import noteController from "../../controllers/mobile/noteController.js";
 
@@ -16,7 +16,7 @@ noteRouter.post(
     console.log(`📝 POST /notes/${req.params.runId} - Creating new note`);
     next();
   },
-  isLoggedIn,
+  verifyJWT,
   catchErrors(noteController.createNewNote)
 );
 
