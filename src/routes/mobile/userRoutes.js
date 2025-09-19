@@ -55,7 +55,6 @@ userRouter.get(
 userRouter.get(
   "/stats",
   verifyJWT,
-  isAuthorized,
   catchErrors(userController.getThisUserStats)
 );
 
