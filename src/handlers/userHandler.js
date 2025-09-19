@@ -120,6 +120,14 @@ const getThisUserRunIds = async (userId) => {
   return await Run.distinct("_id", { userId });
 };
 
+const getThisUserStats = async (userId) => {
+  //FUNCTION: returns tot_notes, tot_open_notes, tot_runs, current_run, currentRunUpdatedAt
+  //Returns in lean JSON format
+  return await User.findOne({ _id: userId })
+    .select("tot_notes tot_open_notes tot_runs current_run currentRunUpdatedAt")
+    .lean();
+};
+
 //UPDATE
 
 const updatePassword = async (
@@ -234,6 +242,7 @@ export default {
   mobileLogin,
   getThisUserRuns,
   getThisUserRunIds,
+  getThisUserStats,
   updateUser,
   updatePassword,
   // setUserPassword,

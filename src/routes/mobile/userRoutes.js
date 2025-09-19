@@ -52,6 +52,14 @@ userRouter.get(
   catchErrors(userController.getThisUserRunIds)
 );
 
+userRouter.get(
+  "/stats",
+  verifyJWT,
+  validateUserId,
+  isAuthorized,
+  catchErrors(userController.getThisUserStats)
+);
+
 //======================
 // UPDATE
 //======================

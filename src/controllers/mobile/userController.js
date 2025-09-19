@@ -69,6 +69,16 @@ const getThisUserRunIds = async (req, res, next) => {
   }
 };
 
+const getThisUserStats = async (req, res, next) => {
+  try {
+    const userId = req.user._id.toString();
+    const stats = await userHandler.getThisUserStats(userId);
+    res.status(200).json(stats);
+  } catch (err) {
+    next(err);
+  }
+};
+
 //UPDATE
 
 const updatePassword = async (req, res, next) => {
@@ -177,6 +187,7 @@ export default {
   logout,
   getThisUserRuns,
   getThisUserRunIds,
+  getThisUserStats,
   updateEmail,
   updateUsername,
   updatePassword,
