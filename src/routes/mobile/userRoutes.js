@@ -53,9 +53,8 @@ userRouter.get(
 );
 
 userRouter.get(
-  "/stats/:userId",
+  "/stats",
   verifyJWT,
-  validateUserId,
   isAuthorized,
   catchErrors(userController.getThisUserStats)
 );

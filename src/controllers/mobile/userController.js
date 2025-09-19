@@ -71,7 +71,7 @@ const getThisUserRunIds = async (req, res, next) => {
 
 const getThisUserStats = async (req, res, next) => {
   try {
-    const userId = req.params.userId;
+    const userId = req.user._id.toString();
     const stats = await userHandler.getThisUserStats(userId);
     res.status(200).json(stats);
   } catch (err) {
