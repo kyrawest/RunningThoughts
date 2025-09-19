@@ -53,7 +53,7 @@ userRouter.get(
 );
 
 userRouter.get(
-  "/stats",
+  "/stats/:userId",
   verifyJWT,
   validateUserId,
   isAuthorized,
