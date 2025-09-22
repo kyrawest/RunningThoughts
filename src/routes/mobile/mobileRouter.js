@@ -40,6 +40,6 @@ mobileRouter.use(
   },
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
-mobileRouter.post("/shortcut/", shortcutRouter);
+mobileRouter.use("/shortcut/", shortcutRouter);
 
 export default mobileRouter;
