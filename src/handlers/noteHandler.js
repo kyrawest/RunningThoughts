@@ -13,8 +13,6 @@ const createNewNote = async (content, userId, runId) => {
   //We also authenticate that the given run belongs to this user in this session.
   //If any document updates fail, abort all updates
 
-  console.log(`📝 Handler: Creating note for user ${userId} in run ${runId}`);
-
   //Sanitize content
   content = sanitizeHtml(content, {
     allowedTags: [],
@@ -46,9 +44,6 @@ const createNewNote = async (content, userId, runId) => {
     //If the userId for the run does not match the userId passed to this function from req.user,
     // throw an error. Users may not add notes to runs that are not theirs.
     if (run.userId.toString() !== userId) {
-      console.log(
-        `📝 Handler: User ${userId} does not have permission for this run ${runId}. the runId userId is ${run.userId.toString()}`
-      );
       throw new createHttpError(403, "You do not have permission for this.", {
         expose: true,
       });

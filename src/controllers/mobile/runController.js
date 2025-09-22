@@ -45,6 +45,7 @@ const addNoteToCurrentRun = async (req, res, next) => {
   const { content } = req.body;
 
   await runHandler.addNoteToCurrentRun(content, userId);
+  res.status(200).json({ message: "Note added to current run." });
 };
 
 //READ

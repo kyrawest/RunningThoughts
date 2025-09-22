@@ -1,6 +1,7 @@
 import User from "../models/userSchema.js";
 import Run from "../models/runSchema.js";
 import Note from "../models/noteSchema.js";
+import noteHandler from "./noteHandler.js";
 
 import sanitizeHtml from "sanitize-html";
 import mongoose from "mongoose";
@@ -122,12 +123,10 @@ const addNoteToCurrentRun = async (content, userId) => {
     !current_run ||
     new Date(currentRunUpdatedAt) < new Date(Date.now() - 2 * 60 * 60 * 1000)
   ) {
-    const newRun = await createNewRun(userId);
-    current_run = newRun._id;
-    currentRunUpdatedAt = newRun.updatedAt;
+    await createNewRunWithNote({ userId }, content);
+  } else {
+    await noteHandler.createNewNote(content, userId.toString(), current_run);
   }
-
-  await createNewNote(content, userId, current_run);
 };
 
 //READ
@@ -215,7 +214,6 @@ const deleteRun = async (runId, loggedUserId) => {
   //Check if user is authorized to alter this run.
   const run = await getRun(runId);
   const userId = run.userId.toString();
-  console.log("handler userId:", userId, loggedUserId);
 
   if (loggedUserId !== userId) {
     throw new createHttpError(
@@ -284,6 +282,7 @@ const deleteRun = async (runId, loggedUserId) => {
 export default {
   createNewRunWithNote,
   createNewRun,
+  addNoteToCurrentRun,
   getRunNotes,
   getRun,
   updateRun,

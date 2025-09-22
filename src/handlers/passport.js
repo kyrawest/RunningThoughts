@@ -33,30 +33,51 @@ passport.use(
   )
 );
 
+const extractTokenFromHeader = (req) => {
+  if (!req || !req.headers) return null;
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return null;
+
+  const match = authHeader.match(/^Bearer (.+)$/);
+  if (match && match[1]) {
+    return match[1]; // raw JWT string
+  }
+
+  return null;
+};
+
 //Create revocable tokens for use in shortcuts
 passport.use(
   "shortcut-jwt",
   new JwtStrategy(
     {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: extractTokenFromHeader,
       secretOrKey: process.env.JWT_SECRET,
+      passReqToCallback: true, // <-- enables access to `req`
     },
-    async (payload, done) => {
+    async (req, payload, done) => {
+      // note first param is now `req`
       try {
         // Only allow Shortcut tokens
         if (payload.type !== "shortcut" || payload.scope !== "create:note") {
           return done(null, false);
         }
 
-        // Check DB for revocation
+        // Extract raw token from the same request
+        const rawToken = extractTokenFromHeader(req);
+
+        // Lookup token in DB for revocation
         const tokenRecord = await ShortcutToken.findOne({
-          token: payload.token,
+          token: rawToken,
           revoked: false,
         });
 
-        if (!tokenRecord) return done(null, false);
+        if (!tokenRecord) {
+          return done(null, false);
+        }
 
-        // Attach user ID to req.user
+        // Attach userId to req.user
         return done(null, tokenRecord.userId);
       } catch (err) {
         done(err, false);
