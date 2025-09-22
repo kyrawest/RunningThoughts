@@ -1,6 +1,7 @@
 //For web-auth
 import passport from "passport";
 import User from "../models/userSchema.js";
+import ShortcutToken from "../models/shortcutTokenSchema.js";
 
 //For mobile-auth
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
@@ -25,6 +26,38 @@ passport.use(
         const user = await User.findById(payload.id);
         if (user) return done(null, user);
         return done(null, false);
+      } catch (err) {
+        done(err, false);
+      }
+    }
+  )
+);
+
+//Create revocable tokens for use in shortcuts
+passport.use(
+  "shortcut-jwt",
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      secretOrKey: process.env.JWT_SECRET,
+    },
+    async (payload, done) => {
+      try {
+        // Only allow Shortcut tokens
+        if (payload.type !== "shortcut" || payload.scope !== "create:note") {
+          return done(null, false);
+        }
+
+        // Check DB for revocation
+        const tokenRecord = await ShortcutToken.findOne({
+          token: payload.token,
+          revoked: false,
+        });
+
+        if (!tokenRecord) return done(null, false);
+
+        // Attach user ID to req.user
+        return done(null, tokenRecord.userId);
       } catch (err) {
         done(err, false);
       }

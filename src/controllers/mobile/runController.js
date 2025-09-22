@@ -40,6 +40,13 @@ const createNewRun = async (req, res, next) => {
   }
 };
 
+const addNoteToCurrentRun = async (req, res, next) => {
+  const userId = req.user; // populated by Passport strategy
+  const { content } = req.body;
+
+  await runHandler.addNoteToCurrentRun(content, userId);
+};
+
 //READ
 
 const getRunNotes = async (req, res, next) => {
@@ -138,6 +145,7 @@ const deleteRun = async (req, res, next) => {
 export default {
   createNewRun,
   createNewRunWithNote,
+  addNoteToCurrentRun,
   getRunNotes,
   getRun,
   updateRun,

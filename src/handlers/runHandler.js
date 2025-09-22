@@ -109,6 +109,27 @@ const createNewRun = async ({ userId, title = "" }) => {
   }
 };
 
+const addNoteToCurrentRun = async (content, userId) => {
+  //FUNCTION: add a note to the current run for a given user if it exists, and is less than 2 hours old.
+  //If it does not exist, create a new run and add the note to it.
+
+  const user = await User.findById(userId).lean();
+  const current_run = user.current_run;
+  const currentRunUpdatedAt = user.currentRunUpdatedAt;
+
+  //if the current run does not exist or the currenRunUpdatedAt is over 2 hours ago, create a new run and add the note to it.
+  if (
+    !current_run ||
+    new Date(currentRunUpdatedAt) < new Date(Date.now() - 2 * 60 * 60 * 1000)
+  ) {
+    const newRun = await createNewRun(userId);
+    current_run = newRun._id;
+    currentRunUpdatedAt = newRun.updatedAt;
+  }
+
+  await createNewNote(content, userId, current_run);
+};
+
 //READ
 
 const getRunNotes = async (runId) => {

@@ -3,6 +3,7 @@ import { Router } from "express";
 import userRouter from "./userRoutes.js";
 import runRouter from "./runRoutes.js";
 import noteRouter from "./noteRoutes.js";
+import shortcutRouter from "./shortcutRouter.js";
 import passport from "../../handlers/passport.js";
 
 import renderController from "../../controllers/mobile/renderController.js";
@@ -39,5 +40,6 @@ mobileRouter.use(
   },
   catchErrors(renderController.dashboard)
 ); // Mobile dashboard rendering endpoint
+mobileRouter.post("/shortcut/", shortcutRouter);
 
 export default mobileRouter;
