@@ -23,7 +23,10 @@ const createNewRunWithNote = async ({ userId, title = "" }, content) => {
     allowedTags: [],
     allowedAttributes: {},
   });
-  content = content.trim().charAt(0).toUpperCase() + content.slice(1);
+  content = content.trim();
+  if (content.length > 0) {
+    content = content[0].toUpperCase() + content.slice(1);
+  }
 
   //Start mongoose transaction since we are altering multiple documents.
   const session = await mongoose.startSession();
