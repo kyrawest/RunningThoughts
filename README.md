@@ -2,7 +2,7 @@
 
 **RunningThoughts** is inspired by a runner I know who hits the pavement with sneakers and an audiobook and returns home with a reminders app full of thoughts. The goal of RunningThoughts is to:
 
-- Organize thoughts by *run*
+- Organize thoughts by _run_
 - Mark off items after you’ve discussed them
 - Make recording a thought easy with a UI that puts speech-to-text at its forefront
 
@@ -17,14 +17,17 @@ User authentication via **Passport.js**
 
 1. Clone the repo and install dependencies.
 2. Create a `.env` file with your environment variables:
-  - URI (MongoDB connection string)
-  - PORT
-  - PASSPORT_SECRET
-  - PASSPORT_COOKIE
+
+- URI (MongoDB connection string)
+- PORT
+- PASSPORT_SECRET
+- PASSPORT_COOKIE
+
 4. To enable localhost, comment out `helmet` config lines in app.js - line 21-38.
-5. Run the app:  
+5. Run the app:
    ```bash
    node ./src/index.js
+   ```
 
 ---
 
@@ -35,10 +38,10 @@ User authentication via **Passport.js**
 Each note belongs to a **run**, and are grouped as such on the dashboard. Clicking into a run gives you a focused view of that session.
 
 Within a run, you can:
+
 - **Add a title** — By default, the frontend will display the creation date of the run as the title unless you specify a custom one.
 - **Clear the run** — Delete all notes from a run.
 - **Delete the run** — Remove the run and its notes entirely. If this was your current run, your user record will be updated accordingly.
-
 
 ### ✅ Check Notes Off
 
@@ -49,14 +52,12 @@ Each note includes a checkbox to indicate whether it’s been discussed.
 - You can view **all notes**, or **only open notes**, for better focus.
 - The `tot_open_notes` field in run documents helps collapse run cards when filtering for open notes only.
 
-
-### 🚹  Accessibility-First Design
+### 🚹 Accessibility-First Design
 
 - Tap the **mic button** to start recording a note. Tap again to save.
-- Tapping **"New Note"** does *not* start recording automatically, giving the user more control when they want to type out their thoughts.
+- Tapping **"New Note"** does _not_ start recording automatically, giving the user more control when they want to type out their thoughts.
 - Editing a note and tapping the mic appends new speech-to-text at the end of your note draft.
 - The mic button is intentionally **large, visible, and mobile-friendly** for use while on the move.
-
 
 ### 🔄 Current Run Logic
 
@@ -64,7 +65,6 @@ RunningThoughts keeps track of your **current run** — the run you last created
 
 - **From the dashboard**: Notes go into your current run. If none exists, a new one is created automatically.
 - **From a run page**: Notes are added to that run. That run then becomes your new current run.
-
 
 ### 🔧 Other
 
@@ -80,6 +80,114 @@ RunningThoughts keeps track of your **current run** — the run you last created
 
 ---
 
+## 📱 Mobile API
+
+RunningThoughts includes a comprehensive mobile API designed for React Native, Expo, and other mobile applications. All mobile endpoints are prefixed with `/mobile/` and return JSON responses.
+
+### 🔐 Authentication Strategy
+
+The mobile API uses **JWT (JSON Web Token) authentication** instead of session-based authentication:
+
+- **Web app**: Uses Passport.js with sessions and cookies
+- **Mobile app**: Uses JWT tokens with `Authorization: Bearer <token>` headers
+- **Token expiration**: 15 minutes for access tokens, 7 days for refresh tokens
+- **Auto-detection**: Error handler automatically detects mobile requests and returns JSON instead of HTML redirects
+
+### 📋 Available Endpoints
+
+#### **Authentication**
+
+```
+POST /mobile/users/login     - Login with username/password
+POST /mobile/users/register  - Create new account
+POST /mobile/users/logout    - Logout (invalidate token)
+POST /mobile/users/refresh   - Refresh access token
+```
+
+#### **Runs**
+
+```
+GET    /mobile/runs          - Get user's runs (paginated)
+POST   /mobile/runs          - Create new run
+POST   /mobile/runs/with-note - Create run with initial note
+GET    /mobile/runs/:runId   - Get specific run
+PUT    /mobile/runs/:runId   - Update run (title, etc.)
+DELETE /mobile/runs/:runId   - Delete run and all notes
+```
+
+#### **Notes**
+
+```
+POST   /mobile/notes/:runId  - Create note in specific run
+GET    /mobile/notes/:noteId - Get specific note
+PUT    /mobile/notes/:noteId - Update note content
+PUT    /mobile/notes/toggle-open/:noteId - Toggle open/closed status
+DELETE /mobile/notes/:noteId - Delete note
+```
+
+#### **User Management**
+
+```
+GET    /mobile/users/profile - Get user profile
+PUT    /mobile/users/profile - Update user profile
+PUT    /mobile/users/password - Change password
+DELETE /mobile/users/account - Delete account
+```
+
+#### **Shortcuts (iOS Shortcuts Integration)**
+
+```
+POST /mobile/shortcuts/generate - Generate shortcut token
+POST /mobile/shortcuts/notes    - Add note via shortcut
+POST /mobile/shortcuts/revoke   - Revoke shortcut token
+GET  /mobile/shortcuts          - List active tokens
+```
+
+### 🔧 Mobile-Specific Features
+
+- **JSON-only responses**: All mobile endpoints return JSON, never HTML
+- **Error handling**: Mobile requests get JSON error responses instead of redirects
+- **Input sanitization**: Same sanitization as web app (HTML stripping, capitalization)
+- **Transaction support**: Database operations use MongoDB transactions for data consistency
+- **Shortcut integration**: Special tokens for iOS Shortcuts app integration
+
+### 📝 Example Usage
+
+**Login:**
+
+```javascript
+const response = await fetch("/mobile/users/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ username: "user", password: "pass" }),
+});
+const { token } = await response.json();
+```
+
+**Create Note:**
+
+```javascript
+const response = await fetch("/mobile/notes/runId123", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify({ content: "My running thought" }),
+});
+```
+
+**Error Response:**
+
+```json
+{
+  "error": "You do not have permission for this.",
+  "status": 403
+}
+```
+
+---
+
 ## 🐞 Problems encountered
 
 ### ⚠️ Flash Message Conflicts
@@ -89,7 +197,6 @@ When building the app, I originally used a mix of traditional HTML form submissi
 This led to a major issue: **flash messages were often discarded** before they could be rendered on the page. This was due to the way some fetch-based requests would redirect and reload the page twice, interrupting the flash message lifecycle.
 
 **Solution**: I converted most of the fetch-based requests to traditional HTML forms to maintain proper redirect and flash message behavior. One fetch-based request remains — toggling a note’s open/closed state. A full page reload is quite disruptive when using this feature, so trading off more robust error handlign was necessary here at this time.
-
 
 ### 🎙 Web Speech-to-Text Limitations
 
@@ -202,7 +309,6 @@ flowchart TD
 
 ## Screenshots and Demos:
 
-
 <table>
   <tr>
     <td align="center"><strong>Toggling open/closed state</strong><br>
@@ -222,5 +328,3 @@ flowchart TD
     </td>
   </tr>
 </table>
-
-
