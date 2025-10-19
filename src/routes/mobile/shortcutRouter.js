@@ -36,7 +36,7 @@ shortcutRouter.post("/generate", verifyJWT, async (req, res) => {
       scope: payload.scope,
     });
 
-    console.log("Created Shortcut token:", newToken);
+    console.log("Created Shortcut token:", token);
     res.json({ token });
   } catch (err) {
     console.error("Error creating Shortcut token:", err);
