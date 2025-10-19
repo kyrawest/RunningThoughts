@@ -14,6 +14,7 @@ const createNewRunWithNote = async (req, res, next) => {
   }
 
   const content = req.body.content;
+  console.log("new run with note content", content);
   const payload = { userId };
 
   if (req.body.title) payload.title = req.body.title;
