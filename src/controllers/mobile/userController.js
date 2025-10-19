@@ -17,8 +17,11 @@ const register = async (req, res, next) => {
   }
 
   try {
-    const user = await userHandler.register(email, password, username);
-    res.status(201).json({ message: "Account created successfully.", user });
+    await userHandler.register(email, password, username);
+    const { user, token } = await userHandler.mobileLogin(email, password);
+    res
+      .status(201)
+      .json({ message: "Account created successfully.", user, token });
   } catch (err) {
     next(err);
   }
